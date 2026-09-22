@@ -145,7 +145,11 @@ function ThemeCycleButton({ id, isDark, isUltra, onCycle, ariaLabel }: {
 function UptimeWidget({ collapsed }: { collapsed?: boolean }) {
   const { status } = useStatusQuery();
   const uptimeSeconds = status?.uptime ?? 0;
-  const uptimeStr = uptimeSeconds > 0 ? TimeFormatter.formatSeconds(uptimeSeconds) : 'Active';
+  const uptimeStr = uptimeSeconds > 0
+    ? (typeof TimeFormatter.formatSecond === 'function'
+        ? TimeFormatter.formatSecond(uptimeSeconds)
+        : `${Math.floor(uptimeSeconds / 86400)}d ${Math.floor((uptimeSeconds % 86400) / 3600)}h`)
+    : 'Active';
 
   if (collapsed) {
     return (

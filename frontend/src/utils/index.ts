@@ -685,6 +685,10 @@ export class TimeFormatter {
     const remain = Number(((second / 3600) - (day * 24)).toFixed(0));
     return day + 'd' + (remain > 0 ? ' ' + remain + 'h' : '');
   }
+
+  static formatSeconds(second: number): string {
+    return TimeFormatter.formatSecond(second);
+  }
 }
 
 export class NumberFormatter {

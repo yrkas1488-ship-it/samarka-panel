@@ -12,6 +12,7 @@
 # Ignore temporary files
 tmp/
 *.tar.gz
+mock-server.*
 
 # Ignore build and distribution directories
 backup/
