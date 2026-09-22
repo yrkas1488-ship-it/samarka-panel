@@ -1385,6 +1385,9 @@ install_x-ui() {
         if [ $# == 0 ]; then
             tag_version=$(curl -Ls --retry 5 --retry-delay 3 --connect-timeout 15 --max-time 60 "https://api.github.com/repos/${samarka_repo}/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
             if [[ ! -n "$tag_version" ]]; then
+                tag_version=$(curl -Ls --retry 5 --retry-delay 3 --connect-timeout 15 --max-time 60 "https://api.github.com/repos/${samarka_repo}/releases" | grep '"tag_name":' | head -n 1 | sed -E 's/.*"([^"]+)".*/\1/')
+            fi
+            if [[ ! -n "$tag_version" ]]; then
                 echo -e "${yellow}Failed to fetch version from ${samarka_repo}, trying fallback...${plain}"
                 samarka_repo="MHSanaei/3x-ui"
                 tag_version=$(curl -Ls --retry 5 --retry-delay 3 --connect-timeout 15 --max-time 60 "https://api.github.com/repos/MHSanaei/3x-ui/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
