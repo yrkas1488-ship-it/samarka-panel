@@ -1,4 +1,4 @@
-# 🦊 Samarka Panel v0.0.1
+# 🦊 Samarka Panel v0.0.2
 
 <p align="center">
   <img alt="Samarka Logo" src="./frontend/public/logo.png" width="120" style="border-radius: 50%;">
@@ -12,9 +12,10 @@
 
 **Samarka Panel** is built upon 3X-UI v3.4.2 (React 19 + TypeScript + Ant Design 6, Go 1.26 + Gin + GORM, Xray-core v26.6.27).
 
-### ✨ Features in Samarka 0.0.1:
+### ✨ Features in Samarka 0.0.2:
 - **Custom Samarka Branding & Logo** in sidebar, login, and favicon.
-- **Default Panel Port 8443** (reliable TLS/HTTPS default).
+- **Default Web Panel Port 2053** (inbounds default to 8443, CDN strictly 443).
+- **In-Browser Onboarding Setup Wizard**: configure Master, Worker (CDN/Double-VPN), or Super-Master upon login.
 - **Reality Camouflage Selection**: `максвайб.рф` (`xn--80aak4aef1h.xn--p1ai:443`), `nemaxvibe.lol:443`, or custom domain.
 - **1-Click Quick Inbound Presets**: VLESS Reality gRPC (8443), VLESS Reality TCP (8443), VLESS XHTTP Yandex Cloud CDN (443), VLESS WS CDN (443).
 - **Yandex Cloud / VK Cloud CDN XHTTP Padding**: whitelisted Russian CDN configuration helper.

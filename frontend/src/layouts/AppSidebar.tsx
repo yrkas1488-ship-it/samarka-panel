@@ -40,9 +40,9 @@ import { useAllSettings } from '@/api/queries/useAllSettings';
 import './AppSidebar.css';
 
 const SIDEBAR_COLLAPSED_KEY = 'isSidebarCollapsed';
-const DONATE_URL = 'https://donate.sanaei.dev/';
-const DOCS_URL = 'https://docs.sanaei.dev/';
-const REPO_URL = 'https://github.com/MHSanaei/3x-ui';
+const DONATE_URL = 'https://github.com/yrkas1488-ship-it/samarka-panel';
+const DOCS_URL = 'https://github.com/yrkas1488-ship-it/samarka-panel#readme';
+const REPO_URL = 'https://github.com/yrkas1488-ship-it/samarka-panel';
 const LOGOUT_KEY = '__logout__';
 
 type IconName = 'dashboard' | 'inbound' | 'team' | 'groups' | 'setting' | 'tool' | 'cluster' | 'hosts' | 'logout' | 'apidocs' | 'outbound' | 'routing';
@@ -321,8 +321,9 @@ export default function AppSidebar() {
         onClose={() => setDrawerOpen(false)}
       >
         <div className="drawer-header">
-          <div className="brand-block">
-            <span className="drawer-brand">3X-UI</span>
+          <div className="brand-block" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <img src="/logo.png" alt="Samarka" style={{ width: 28, height: 28, borderRadius: 6, objectFit: 'cover' }} />
+            <span className="drawer-brand">Samarka</span>
           </div>
           <div className="drawer-header-actions">
             <DocsButton ariaLabel={t('menu.docs') || 'Documentation'} />

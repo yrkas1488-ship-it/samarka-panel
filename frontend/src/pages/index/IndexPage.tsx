@@ -15,7 +15,9 @@ import {
   Statistic,
   Tag,
   Tooltip,
+  Typography,
 } from 'antd';
+const { Text } = Typography;
 import {
   BarsOutlined,
   ControlOutlined,
@@ -35,6 +37,7 @@ import {
   ForkOutlined,
   CopyOutlined,
   TelegramFilled,
+  RocketOutlined,
 } from '@ant-design/icons';
 
 import { HttpUtil, SizeFormatter, TimeFormatter, ClipboardManager, FileManager } from '@/utils';
@@ -48,6 +51,7 @@ import { LazyMount } from '@/components/utility';
 import { setMessageInstance } from '@/utils/messageBus';
 import StatusCard from './StatusCard';
 import XrayStatusCard from './XrayStatusCard';
+import SamarkaSetupWizardModal from './SamarkaSetupWizardModal';
 import type { PanelUpdateInfo } from './PanelUpdateModal';
 const JsonEditor = lazy(() => import('@/components/form/JsonEditor'));
 const PanelUpdateModal = lazy(() => import('./PanelUpdateModal'));
@@ -89,6 +93,7 @@ export default function IndexPage() {
   const [configText, setConfigText] = useState('');
   const [loading, setLoading] = useState(false);
   const [loadingTip, setLoadingTip] = useState(t('loading'));
+  const [samarkaSetupOpen, setSamarkaSetupOpen] = useState(() => !localStorage.getItem('samarka_setup_completed'));
 
   useEffect(() => {
     HttpUtil.post<{ accessLogEnable?: boolean; devChannelEnable?: boolean }>(
@@ -192,6 +197,31 @@ export default function IndexPage() {
               ) : (
                 <Row gutter={[isMobile ? 8 : 16, 12]}>
                   <Col span={24}>
+                    <Card
+                      size="small"
+                      style={{
+                        background: 'linear-gradient(90deg, rgba(22, 119, 255, 0.08) 0%, rgba(82, 196, 26, 0.08) 100%)',
+                        borderColor: '#1677ff',
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+                        <Space>
+                          <RocketOutlined style={{ fontSize: 24, color: '#1677ff' }} />
+                          <div>
+                            <Text strong style={{ fontSize: 15 }}>Конфигурация Samarka v0.0.2</Text>
+                            <div style={{ fontSize: 12, color: 'rgba(128,128,128,0.9)' }}>
+                              Роль: {localStorage.getItem('samarka_server_role') === 'worker' ? '🛠️ Второстепенный (Worker)' : localStorage.getItem('samarka_server_role') === 'super_master' ? '🌟 Глав-Главный' : '👑 Главный (Master)'} | Порт веб-панели: <b>2053</b> | Протоколы: <b>8443</b> / CDN <b>443</b>
+                            </div>
+                          </div>
+                        </Space>
+                        <Button type="primary" icon={<ControlOutlined />} onClick={() => setSamarkaSetupOpen(true)}>
+                          Мастер настройки ролей и CDN
+                        </Button>
+                      </div>
+                    </Card>
+                  </Col>
+
+                  <Col span={24}>
                     <StatusCard status={status} isMobile={isMobile} />
                   </Col>
 
@@ -233,7 +263,7 @@ export default function IndexPage() {
                     <Card
                       title={
                         <Space>
-                          <span>3X-UI</span>
+                          <span>Samarka</span>
                           {isMobile && displayVersion && (
                             <Tag color={panelUpdateInfo.updateAvailable ? 'orange' : 'green'}>
                               {panelUpdateInfo.updateAvailable
@@ -547,6 +577,11 @@ export default function IndexPage() {
             />
           </Modal>
         </LazyMount>
+
+        <SamarkaSetupWizardModal
+          open={samarkaSetupOpen}
+          onClose={() => setSamarkaSetupOpen(false)}
+        />
       </Layout>
     </ConfigProvider>
   );

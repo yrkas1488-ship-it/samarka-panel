@@ -1016,40 +1016,6 @@ config_after_install() {
             local config_password="${XUI_PASSWORD:-$(gen_random_string 10)}"
             local config_port=""
 
-            local server_role="1"
-            local worker_mode=""
-            local master_join_link=""
-            echo ""
-            echo -e "${green}═════════════════════════════════════════════════════════════════${plain}"
-            echo -e "${green}         Настройка роли сервера Samarka v0.0.1                  ${plain}"
-            echo -e "${green}═════════════════════════════════════════════════════════════════${plain}"
-            echo -e "  1) Главный сервер (Master) — управление пирами, генерация ссылок"
-            echo -e "  2) Второстепенный сервер (Worker) — подключение к Главному серверу"
-            echo -e "  3) Глав-Главный сервер (Super-Master) — центральный пульт кластера"
-            if [[ "$NONINTERACTIVE" == "1" ]]; then
-                server_role="${SAMARKA_SERVER_ROLE:-1}"
-            else
-                read -rp "Выберите роль сервера [1]: " server_role
-                server_role="${server_role:-1}"
-            fi
-
-            if [[ "$server_role" == "2" ]]; then
-                echo ""
-                echo -e "${yellow}--- Настройка Второстепенного (Worker) сервера ---${plain}"
-                echo -e "  1) Способ через CDN (Origin для Yandex Cloud / Cloudflare)"
-                echo -e "  2) Способ Двойного VPN (Relay / Exit узел цепи)"
-                if [[ "$NONINTERACTIVE" == "1" ]]; then
-                    worker_mode="${SAMARKA_WORKER_MODE:-1}"
-                else
-                    read -rp "Выберите способ подключения [1]: " worker_mode
-                    worker_mode="${worker_mode:-1}"
-                fi
-
-                if [[ "$NONINTERACTIVE" != "1" ]]; then
-                    read -rp "Вставьте ссылку подключения от Главного сервера (Enter для настройки позже): " master_join_link
-                fi
-            fi
-
             local db_label="SQLite (/etc/x-ui/x-ui.db)"
             echo ""
             echo -e "${green}═══════════════════════════════════════════${plain}"
@@ -1183,12 +1149,12 @@ EOF
                     config_port="${XUI_PANEL_PORT}"
                     echo -e "${yellow}Порт панели: ${config_port}${plain}"
                 else
-                    config_port="8443"
-                    echo -e "${yellow}Дефолтный порт панели Samarka: 8443${plain}"
+                    config_port="2053"
+                    echo -e "${yellow}Дефолтный порт панели Samarka: 2053${plain}"
                 fi
             else
-                read -rp "Введите порт панели [8443]: " config_port
-                config_port="${config_port:-8443}"
+                read -rp "Введите порт панели [2053]: " config_port
+                config_port="${config_port:-2053}"
                 echo -e "${yellow}Порт панели: ${config_port}${plain}"
             fi
 
@@ -1211,9 +1177,8 @@ EOF
             # Display final credentials and access information
             echo ""
             echo -e "${green}═══════════════════════════════════════════${plain}"
-            echo -e "${green}     Установка Samarka v0.0.1 завершена!   ${plain}"
+            echo -e "${green}     Установка Samarka v0.0.2 завершена!   ${plain}"
             echo -e "${green}═══════════════════════════════════════════${plain}"
-            echo -e "${green}Роль:        ${plain}$(case "$server_role" in 2) echo "Второстепенный сервер (Worker)";; 3) echo "Глав-Главный сервер (Super-Master)";; *) echo "Главный сервер (Master)";; esac)"
             echo -e "${green}Username:    ${config_username}${plain}"
             echo -e "${green}Password:    ${config_password}${plain}"
             echo -e "${green}Port:        ${config_port}${plain}"
@@ -1221,20 +1186,8 @@ EOF
             echo -e "${green}Database:    ${db_label}${plain}"
             echo -e "${green}Access URL:  ${SSL_SCHEME}://${SSL_HOST}:${config_port}/${config_webBasePath}${plain}"
             echo -e "${green}API Token:   ${config_apiToken}${plain}"
-            if [[ "$server_role" == "1" || "$server_role" == "3" ]]; then
-                echo -e "${green}-------------------------------------------${plain}"
-                echo -e "${green}Ссылка для подключения подчиненных (Worker Join Link):${plain}"
-                echo -e "${blue}samarka://join?host=${SSL_HOST}&port=${config_port}&path=${config_webBasePath}&token=${config_apiToken}${plain}"
-            fi
-            if [[ "$server_role" == "2" ]]; then
-                echo -e "${green}-------------------------------------------${plain}"
-                echo -e "${yellow}Режим воркера:${plain} $(if [[ "$worker_mode" == "2" ]]; then echo "Двойной VPN (Relay/Exit)"; else echo "Через CDN (Origin)"; fi)"
-                if [[ -n "$master_join_link" ]]; then
-                    echo -e "${green}Привязка к главному:${plain} ${master_join_link}"
-                fi
-            fi
             echo -e "${green}═══════════════════════════════════════════${plain}"
-            echo -e "${yellow}⚠ ВАЖНО: Сохраните эти данные в надежном месте!${plain}"
+            echo -e "${yellow}⚠ Войдите в панель по ссылке выше — при первом входе откроется мастер настройки ролей и CDN!${plain}"
             echo -e "${yellow}Управление: команда 'samarka' или 'x-ui'${plain}"
             if [[ "$SSL_SCHEME" == "https" ]]; then
                 echo -e "${yellow}⚠ SSL Certificate: Enabled and configured${plain}"
