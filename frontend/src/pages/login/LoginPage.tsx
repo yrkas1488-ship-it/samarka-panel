@@ -27,6 +27,7 @@ import { antdRule } from '@/utils/zodForm';
 import { setMessageInstance } from '@/utils/messageBus';
 import { pauseAnimationsUntilLeave, useTheme } from '@/hooks/useTheme';
 import { LoginFormSchema, TwoFactorCodeSchema, type LoginFormValues } from '@/schemas/login';
+import logoImg from '@/assets/logo.png';
 import './LoginPage.css';
 
 const HEADLINE_INTERVAL_MS = 2000;
@@ -173,7 +174,7 @@ export default function LoginPage() {
             ) : (
               <div className="login-card">
                 <div className="brand" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
-                  <img src="/logo.png" alt="Samarka" style={{ width: 48, height: 48, borderRadius: 12, objectFit: 'cover' }} />
+                  <img src={logoImg} alt="Samarka" style={{ width: 48, height: 48, borderRadius: 12, objectFit: 'cover' }} />
                   <span className="brand-name">Samarka</span>
                   <span className="brand-accent" aria-hidden="true" />
                 </div>

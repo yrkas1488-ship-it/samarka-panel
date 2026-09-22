@@ -59,11 +59,11 @@ server {
       size="small"
       title={
         <Space>
-          <GlobalOutlined style={{ color: '#1677ff' }} />
+          <GlobalOutlined style={{ color: '#f59e0b' }} />
           <span style={{ fontWeight: 600 }}>Привязка своего домена к панели Samarka</span>
         </Space>
       }
-      style={{ marginBottom: 16, borderColor: 'rgba(22, 119, 255, 0.3)' }}
+      style={{ marginBottom: 16, borderColor: 'rgba(245, 158, 11, 0.35)', borderRadius: 10 }}
     >
       <Alert
         type="info"
@@ -88,6 +88,7 @@ server {
             href="https://dash.cloudflare.com/"
             target="_blank"
             rel="noopener noreferrer"
+            style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', borderColor: '#f59e0b', color: '#0f172a', fontWeight: 600 }}
           >
             Управление DNS в Cloudflare ↗
           </Button>

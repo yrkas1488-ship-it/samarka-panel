@@ -1,4 +1,4 @@
-# 🦊 Samarka Panel v0.0.2
+# 🦊 Samarka Panel v0.0.3
 
 <p align="center">
   <img alt="Samarka Logo" src="./frontend/public/logo.png" width="120" style="border-radius: 50%;">
@@ -12,7 +12,17 @@
 
 **Samarka Panel** is built upon 3X-UI v3.4.2 (React 19 + TypeScript + Ant Design 6, Go 1.26 + Gin + GORM, Xray-core v26.6.27).
 
-### ✨ Features in Samarka 0.0.2:
+### ✨ New in Samarka 0.0.3:
+- **Dark Slate Navy & Amber Redesign**: Slate teal background (`#0c1824` / `#132337`) with golden amber active pill menu items (`#f59e0b` / `#d97706`).
+- **Streamlined Navigation**: Primary sidebar displays only Dashboard, Inbounds & Reality, Clients, Outbound, Routing, and Settings. Secondary sections (Groups, Nodes, Hosts, Xray Configs, API Docs) are organized within Settings.
+- **Online Badge & Live UPTIME Widget**: Green status indicator on Samarka avatar and live UPTIME display at the bottom of the sidebar.
+- **Language Streamlining**: Focused strictly on Russian (`ru-RU`), English (`en-US`), and Ukrainian (`uk-UA`). Interactive language selection prompt in `install.sh`.
+- **Dedicated Domain Binding Tab** in Settings with 1-click Cloudflare DNS shortcut, Let's Encrypt Certbot command, and Nginx reverse proxy template.
+- **Logo 404 Bugfix**: Direct asset bundling prevents broken logo images when custom `webBasePath` is configured.
+
+---
+
+### 🚀 Core Samarka Features:
 - **Custom Samarka Branding & Logo** in sidebar, login, and favicon.
 - **Default Web Panel Port 2053** (inbounds default to 8443, CDN strictly 443).
 - **In-Browser Onboarding Setup Wizard**: configure Master, Worker (CDN/Double-VPN), or Super-Master upon login.
@@ -20,7 +30,6 @@
 - **1-Click Quick Inbound Presets**: VLESS Reality gRPC (8443), VLESS Reality TCP (8443), VLESS XHTTP Yandex Cloud CDN (443), VLESS WS CDN (443).
 - **Yandex Cloud / VK Cloud CDN XHTTP Padding**: whitelisted Russian CDN configuration helper.
 - **Cluster Hierarchy**: Super-Master orchestrator, Master link generator, Worker node with CDN or Double-VPN relay mode.
-- **Domain Binding**: Quick guide for Let's Encrypt Certbot & Nginx Reverse Proxy with Cloudflare button.
 
 Built as an enhanced fork of the original X-UI project, 3X-UI adds broader protocol support, improved stability, per-client traffic accounting, and many quality-of-life features.
 

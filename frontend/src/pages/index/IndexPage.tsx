@@ -200,21 +200,33 @@ export default function IndexPage() {
                     <Card
                       size="small"
                       style={{
-                        background: 'linear-gradient(90deg, rgba(22, 119, 255, 0.08) 0%, rgba(82, 196, 26, 0.08) 100%)',
-                        borderColor: '#1677ff',
+                        background: 'linear-gradient(90deg, rgba(245, 158, 11, 0.12) 0%, rgba(217, 119, 6, 0.05) 100%)',
+                        borderColor: 'rgba(245, 158, 11, 0.35)',
+                        borderRadius: 12,
                       }}
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
                         <Space>
-                          <RocketOutlined style={{ fontSize: 24, color: '#1677ff' }} />
+                          <RocketOutlined style={{ fontSize: 24, color: '#f59e0b' }} />
                           <div>
-                            <Text strong style={{ fontSize: 15 }}>Конфигурация Samarka v0.0.2</Text>
-                            <div style={{ fontSize: 12, color: 'rgba(128,128,128,0.9)' }}>
-                              Роль: {localStorage.getItem('samarka_server_role') === 'worker' ? '🛠️ Второстепенный (Worker)' : localStorage.getItem('samarka_server_role') === 'super_master' ? '🌟 Глав-Главный' : '👑 Главный (Master)'} | Порт веб-панели: <b>2053</b> | Протоколы: <b>8443</b> / CDN <b>443</b>
+                            <Text strong style={{ fontSize: 15, color: '#f8fafc' }}>Конфигурация Samarka v0.0.3</Text>
+                            <div style={{ fontSize: 12, color: 'rgba(226, 232, 240, 0.75)' }}>
+                              Роль: {localStorage.getItem('samarka_server_role') === 'worker' ? '🛠️ Второстепенный (Worker)' : localStorage.getItem('samarka_server_role') === 'super_master' ? '🌟 Глав-Главный' : '👑 Главный (Master)'} | Порт веб-панели: <b style={{ color: '#f59e0b' }}>2053</b> | Протоколы: <b style={{ color: '#f59e0b' }}>8443</b> / CDN <b style={{ color: '#f59e0b' }}>443</b>
                             </div>
                           </div>
                         </Space>
-                        <Button type="primary" icon={<ControlOutlined />} onClick={() => setSamarkaSetupOpen(true)}>
+                        <Button
+                          type="primary"
+                          icon={<ControlOutlined />}
+                          onClick={() => setSamarkaSetupOpen(true)}
+                          style={{
+                            background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                            borderColor: '#f59e0b',
+                            color: '#0f172a',
+                            fontWeight: 600,
+                            borderRadius: 8,
+                          }}
+                        >
                           Мастер настройки ролей и CDN
                         </Button>
                       </div>

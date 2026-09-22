@@ -1016,6 +1016,30 @@ config_after_install() {
             local config_password="${XUI_PASSWORD:-$(gen_random_string 10)}"
             local config_port=""
 
+            local selected_lang="ru-RU"
+            echo ""
+            echo -e "${yellow}═══════════════════════════════════════════${plain}"
+            echo -e "${yellow}     Выбор языка / Language Selection      ${plain}"
+            echo -e "${yellow}═══════════════════════════════════════════${plain}"
+            echo -e "  1) Русский (Russian) [default]"
+            echo -e "  2) English"
+            echo -e "  3) Українська (Ukrainian)"
+            if [[ "$NONINTERACTIVE" == "1" ]]; then
+                case "${XUI_LANG:-ru}" in
+                    en*|EN*) selected_lang="en-US" ;;
+                    uk*|UK*|ua*|UA*) selected_lang="uk-UA" ;;
+                    *) selected_lang="ru-RU" ;;
+                esac
+            else
+                read -rp "Выберите язык / Select language [1-3] (default: 1): " lang_choice
+                case "${lang_choice}" in
+                    2) selected_lang="en-US" ;;
+                    3) selected_lang="uk-UA" ;;
+                    *) selected_lang="ru-RU" ;;
+                esac
+            fi
+            echo -e "${green}Выбран язык: ${selected_lang}${plain}"
+
             local db_label="SQLite (/etc/x-ui/x-ui.db)"
             echo ""
             echo -e "${green}═══════════════════════════════════════════${plain}"
@@ -1177,7 +1201,7 @@ EOF
             # Display final credentials and access information
             echo ""
             echo -e "${green}═══════════════════════════════════════════${plain}"
-            echo -e "${green}     Установка Samarka v0.0.2 завершена!   ${plain}"
+            echo -e "${green}     Установка Samarka v0.0.3 завершена!   ${plain}"
             echo -e "${green}═══════════════════════════════════════════${plain}"
             echo -e "${green}Username:    ${config_username}${plain}"
             echo -e "${green}Password:    ${config_password}${plain}"

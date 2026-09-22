@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Alert,
   Button,
@@ -15,6 +15,13 @@ import {
   Spin,
   message,
 } from 'antd';
+import {
+  GlobalOutlined,
+  TagsOutlined,
+  ClusterOutlined,
+  ToolOutlined,
+  ApiOutlined,
+} from '@ant-design/icons';
 
 import { HttpUtil, PromiseUtil } from '@/utils';
 import { setMessageInstance } from '@/utils/messageBus';
@@ -24,6 +31,7 @@ import { useAllSettings } from '@/api/queries/useAllSettings';
 import { AllSettingSchema } from '@/schemas/setting';
 import AppSidebar from '@/layouts/AppSidebar';
 import GeneralTab from './GeneralTab';
+import DomainBindingCard from './DomainBindingCard';
 import SecurityTab from './SecurityTab';
 import TelegramTab from './TelegramTab';
 import EmailTab from './EmailTab';
@@ -35,7 +43,7 @@ interface ApiMsg {
   success?: boolean;
 }
 
-const tabSlugs = ['general', 'security', 'telegram', 'email', 'subscription', 'subscription-formats'];
+const tabSlugs = ['general', 'domain', 'security', 'telegram', 'email', 'subscription', 'subscription-formats'];
 
 function isIp(h: string): boolean {
   if (typeof h !== 'string') return false;
@@ -61,6 +69,7 @@ export default function SettingsPage() {
   const { t } = useTranslation();
   const { isDark, isUltra, antdThemeConfig } = useTheme();
   const { isMobile } = useMediaQuery();
+  const navigate = useNavigate();
   const [modal, modalContextHolder] = Modal.useModal();
   const [messageApi, messageContextHolder] = message.useMessage();
 
@@ -197,6 +206,18 @@ export default function SettingsPage() {
 
   const categoryBody = useMemo(() => {
     switch (activeSlug) {
+      case 'domain':
+        return (
+          <DomainBindingCard
+            serverIp={entryHost}
+            panelPort={Number(allSetting.webPort) || 2053}
+            webBasePath={allSetting.webBasePath}
+            onApplyDomainCert={(certPath, keyPath) => {
+              updateSetting({ webCertFile: certPath, webKeyFile: keyPath });
+              messageApi.success('Пути к SSL-сертификату применены! Не забудьте нажать «Сохранить»');
+            }}
+          />
+        );
       case 'security': return <SecurityTab allSetting={allSetting} updateSetting={updateSetting} saveSetting={savePayload} />;
       case 'telegram': return <TelegramTab allSetting={allSetting} updateSetting={updateSetting} />;
       case 'email': return <EmailTab allSetting={allSetting} updateSetting={updateSetting} />;
@@ -204,7 +225,7 @@ export default function SettingsPage() {
       case 'subscription-formats': return <SubscriptionFormatsTab allSetting={allSetting} updateSetting={updateSetting} />;
       default: return <GeneralTab allSetting={allSetting} updateSetting={updateSetting} />;
     }
-  }, [activeSlug, allSetting, updateSetting]);
+  }, [activeSlug, allSetting, updateSetting, entryHost, savePayload, messageApi]);
 
   return (
     <ConfigProvider theme={antdThemeConfig}>
@@ -257,6 +278,34 @@ export default function SettingsPage() {
                             <Alert type="warning" showIcon title={t('pages.settings.infoDesc')} />
                           </Col>
                         </Row>
+                      </Card>
+                    </Col>
+
+                    <Col span={24}>
+                      <Card size="small" style={{ background: 'rgba(255, 255, 255, 0.02)', borderColor: 'rgba(255, 255, 255, 0.08)' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+                          <span style={{ fontSize: 13, color: '#94a3b8', fontWeight: 500 }}>Дополнительные разделы:</span>
+                          <Space wrap>
+                            <Button size="small" icon={<GlobalOutlined style={{ color: '#f59e0b' }} />} onClick={() => { window.location.hash = '#domain'; }}>
+                              🌐 Привязка домена
+                            </Button>
+                            <Button size="small" icon={<TagsOutlined />} onClick={() => navigate('/groups')}>
+                              Группы
+                            </Button>
+                            <Button size="small" icon={<ClusterOutlined />} onClick={() => navigate('/nodes')}>
+                              Узлы
+                            </Button>
+                            <Button size="small" icon={<GlobalOutlined />} onClick={() => navigate('/hosts')}>
+                              Хосты
+                            </Button>
+                            <Button size="small" icon={<ToolOutlined />} onClick={() => navigate('/xray')}>
+                              Конфигурации Xray
+                            </Button>
+                            <Button size="small" icon={<ApiOutlined />} onClick={() => navigate('/api-docs')}>
+                              API Docs
+                            </Button>
+                          </Space>
+                        </div>
                       </Card>
                     </Col>
 

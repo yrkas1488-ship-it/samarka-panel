@@ -29,50 +29,64 @@ const initialUltra = readBool(STORAGE_ULTRA, false);
 applyDom(initialDark, initialUltra);
 
 const DARK_TOKENS = {
-  colorBgBase: '#1a1b1f',
-  colorBgLayout: '#1a1b1f',
-  colorBgContainer: '#23252b',
-  colorBgElevated: '#2d2f37',
+  colorBgBase: '#0c1824',
+  colorBgLayout: '#0c1824',
+  colorBgContainer: '#132337',
+  colorBgElevated: '#1a2e47',
+  colorPrimary: '#f59e0b',
+  colorLink: '#f59e0b',
+  colorLinkHover: '#fbbf24',
+  colorBorder: '#1e354e',
+  colorBorderSecondary: 'rgba(255, 255, 255, 0.08)',
 };
 const ULTRA_DARK_TOKENS = {
-  colorBgBase: '#000',
-  colorBgLayout: '#000',
-  colorBgContainer: '#101013',
-  colorBgElevated: '#1a1a1e',
+  colorBgBase: '#060d14',
+  colorBgLayout: '#060d14',
+  colorBgContainer: '#0c1824',
+  colorBgElevated: '#132337',
+  colorPrimary: '#f59e0b',
+  colorLink: '#f59e0b',
+  colorLinkHover: '#fbbf24',
+  colorBorder: '#182b3f',
+  colorBorderSecondary: 'rgba(255, 255, 255, 0.05)',
 };
 const DARK_LAYOUT_TOKENS = {
-  bodyBg: '#1a1b1f',
-  headerBg: '#15161a',
+  bodyBg: '#0c1824',
+  headerBg: '#09131d',
   headerColor: '#ffffff',
-  footerBg: '#1a1b1f',
-  siderBg: '#15161a',
-  triggerBg: '#23252b',
+  footerBg: '#0c1824',
+  siderBg: '#0f1d2b',
+  triggerBg: '#132337',
   triggerColor: '#ffffff',
 };
 const ULTRA_DARK_LAYOUT_TOKENS = {
-  bodyBg: '#000',
-  headerBg: '#050507',
+  bodyBg: '#060d14',
+  headerBg: '#04080e',
   headerColor: '#ffffff',
-  footerBg: '#000',
-  siderBg: '#050507',
-  triggerBg: '#1a1a1e',
+  footerBg: '#060d14',
+  siderBg: '#08121c',
+  triggerBg: '#0c1824',
   triggerColor: '#ffffff',
 };
 const DARK_MENU_TOKENS = {
-  darkItemBg: '#15161a',
-  darkSubMenuItemBg: '#1a1b1f',
-  darkPopupBg: '#23252b',
+  darkItemBg: '#0f1d2b',
+  darkSubMenuItemBg: '#0c1824',
+  darkPopupBg: '#132337',
+  darkItemSelectedBg: '#f59e0b',
+  darkItemSelectedColor: '#0f172a',
 };
 const ULTRA_DARK_MENU_TOKENS = {
-  darkItemBg: '#050507',
-  darkSubMenuItemBg: '#000',
-  darkPopupBg: '#101013',
+  darkItemBg: '#08121c',
+  darkSubMenuItemBg: '#060d14',
+  darkPopupBg: '#0c1824',
+  darkItemSelectedBg: '#f59e0b',
+  darkItemSelectedColor: '#0f172a',
 };
 const DARK_CARD_TOKENS = {
-  colorBorderSecondary: 'rgba(255, 255, 255, 0.06)',
+  colorBorderSecondary: 'rgba(255, 255, 255, 0.08)',
 };
 const ULTRA_DARK_CARD_TOKENS = {
-  colorBorderSecondary: 'rgba(255, 255, 255, 0.04)',
+  colorBorderSecondary: 'rgba(255, 255, 255, 0.05)',
 };
 const STATISTIC_TOKENS = {
   contentFontSize: 17,

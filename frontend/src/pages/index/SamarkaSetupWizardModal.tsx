@@ -68,16 +68,22 @@ export default function SamarkaSetupWizardModal({ open, onClose }: SamarkaSetupW
       width={780}
       title={
         <Space>
-          <RocketOutlined style={{ color: '#1677ff', fontSize: 20 }} />
-          <span style={{ fontSize: 18, fontWeight: 700 }}>Мастер настройки Samarka v0.0.2</span>
-          <Tag color="blue">Веб-конфигуратор</Tag>
+          <RocketOutlined style={{ color: '#f59e0b', fontSize: 20 }} />
+          <span style={{ fontSize: 18, fontWeight: 700 }}>Мастер настройки Samarka v0.0.3</span>
+          <Tag color="gold">Веб-конфигуратор</Tag>
         </Space>
       }
       footer={[
         <Button key="cancel" onClick={onClose}>
           Закрыть
         </Button>,
-        <Button key="save" type="primary" icon={<CheckOutlined />} onClick={handleSave}>
+        <Button
+          key="save"
+          type="primary"
+          icon={<CheckOutlined />}
+          onClick={handleSave}
+          style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', borderColor: '#f59e0b', color: '#0f172a', fontWeight: 600 }}
+        >
           Сохранить настройки роли
         </Button>,
       ]}

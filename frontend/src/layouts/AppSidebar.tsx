@@ -33,10 +33,12 @@ import {
   ToolOutlined,
 } from '@ant-design/icons';
 
-import { HttpUtil } from '@/utils';
+import { HttpUtil, TimeFormatter } from '@/utils';
 import { formatPanelVersion } from '@/lib/panel-version';
 import { pauseAnimationsUntilLeave, useTheme } from '@/hooks/useTheme';
 import { useAllSettings } from '@/api/queries/useAllSettings';
+import { useStatusQuery } from '@/api/queries/useStatusQuery';
+import logoImg from '@/assets/logo.png';
 import './AppSidebar.css';
 
 const SIDEBAR_COLLAPSED_KEY = 'isSidebarCollapsed';
@@ -140,6 +142,30 @@ function ThemeCycleButton({ id, isDark, isUltra, onCycle, ariaLabel }: {
   );
 }
 
+function UptimeWidget({ collapsed }: { collapsed?: boolean }) {
+  const { status } = useStatusQuery();
+  const uptimeSeconds = status?.uptime ?? 0;
+  const uptimeStr = uptimeSeconds > 0 ? TimeFormatter.formatSeconds(uptimeSeconds) : 'Active';
+
+  if (collapsed) {
+    return (
+      <div className="sider-uptime-box is-collapsed" title={`UPTIME: ${uptimeStr}\nSystem Normal`}>
+        <span className="online-dot" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="sider-uptime-box">
+      <div className="sider-uptime-text">UPTIME: {uptimeStr}</div>
+      <div className="sider-uptime-status">
+        <span className="online-dot" />
+        <span>System Normal</span>
+      </div>
+    </div>
+  );
+}
+
 export default function AppSidebar() {
   const { t } = useTranslation();
   const { isDark, isUltra, toggleTheme, toggleUltra } = useTheme();
@@ -158,14 +184,9 @@ export default function AppSidebar() {
     { key: '/', icon: 'dashboard', title: t('menu.dashboard') },
     { key: '/inbounds', icon: 'inbound', title: t('menu.inbounds') },
     { key: '/clients', icon: 'team', title: t('menu.clients') },
-    { key: '/groups', icon: 'groups', title: t('menu.groups') },
-    { key: '/nodes', icon: 'cluster', title: t('menu.nodes') },
-    { key: '/hosts', icon: 'hosts', title: t('menu.hosts') },
     { key: '/outbound', icon: 'outbound', title: t('menu.outbounds') },
     { key: '/routing', icon: 'routing', title: t('menu.routing') },
     { key: '/settings', icon: 'setting', title: t('menu.settings') },
-    { key: '/xray', icon: 'tool', title: t('menu.xray') },
-    { key: '/api-docs', icon: 'apidocs', title: t('menu.apiDocs') },
     { key: LOGOUT_KEY, icon: 'logout', title: t('logout') },
   ], [t]);
 
@@ -175,7 +196,13 @@ export default function AppSidebar() {
   const settingsChildren = useMemo<NonNullable<MenuProps['items']>>(() => {
     const children: NonNullable<MenuProps['items']> = [
       { key: '/settings#general', icon: <SettingOutlined />, label: t('pages.settings.panelSettings') },
+      { key: '/settings#domain', icon: <GlobalOutlined />, label: '🌐 Привязка домена к панели' },
       { key: '/settings#security', icon: <SafetyOutlined />, label: t('pages.settings.securitySettings') },
+      { key: '/groups', icon: <TagsOutlined />, label: t('menu.groups') },
+      { key: '/nodes', icon: <ClusterOutlined />, label: t('menu.nodes') },
+      { key: '/hosts', icon: <GlobalOutlined />, label: t('menu.hosts') },
+      { key: '/xray', icon: <ToolOutlined />, label: t('menu.xray') },
+      { key: '/api-docs', icon: <ApiOutlined />, label: t('menu.apiDocs') },
       { key: '/settings#telegram', icon: <MessageOutlined />, label: t('pages.settings.TGBotSettings') },
       { key: '/settings#email', icon: <MailOutlined />, label: t('pages.settings.emailSettings') },
       { key: '/settings#subscription', icon: <CloudServerOutlined />, label: t('pages.settings.subSettings') },
@@ -186,22 +213,14 @@ export default function AppSidebar() {
     return children;
   }, [t, showSubFormats]);
 
-  const xrayChildren = useMemo<NonNullable<MenuProps['items']>>(() => [
-    { key: '/xray#basic', icon: <SettingOutlined />, label: t('pages.xray.basicTemplate') },
-    { key: '/xray#balancer', icon: <ClusterOutlined />, label: t('pages.xray.Balancers') },
-    { key: '/xray#dns', icon: <DatabaseOutlined />, label: 'DNS' },
-    { key: '/xray#advanced', icon: <CodeOutlined />, label: t('pages.xray.advancedTemplate') },
-  ], [t]);
-
-  const settingsActive = pathname === '/settings';
-  const xrayActive = pathname === '/xray';
+  const settingsActive = pathname === '/settings' || ['/groups', '/nodes', '/hosts', '/xray', '/api-docs'].includes(pathname);
   const selectedKey = settingsActive
-    ? `/settings${hash || '#general'}`
-    : xrayActive
-      ? `/xray${hash || '#basic'}`
-      : (pathname === '' ? '/' : pathname);
+    ? pathname === '/settings'
+      ? `/settings${hash || '#general'}`
+      : pathname
+    : (pathname === '' ? '/' : pathname);
 
-  const openSubmenu = settingsActive ? '/settings' : xrayActive ? '/xray' : null;
+  const openSubmenu = settingsActive ? '/settings' : null;
   const [openKeys, setOpenKeys] = useState<string[]>(() => (openSubmenu ? [openSubmenu] : []));
   useEffect(() => {
     if (openSubmenu) {
@@ -215,12 +234,9 @@ export default function AppSidebar() {
       if (tab.key === '/settings') {
         return { key: tab.key, icon: <Icon />, label: tab.title, children: settingsChildren };
       }
-      if (tab.key === '/xray') {
-        return { key: tab.key, icon: <Icon />, label: tab.title, children: xrayChildren };
-      }
       return { key: tab.key, icon: <Icon />, label: tab.title };
     }),
-  [settingsChildren, xrayChildren]);
+  [settingsChildren]);
 
   const openLink = useCallback(async (key: string) => {
     if (key === LOGOUT_KEY) {
@@ -266,14 +282,24 @@ export default function AppSidebar() {
         onCollapse={onSiderCollapse}
       >
         <div className={`sider-brand${collapsed ? ' sider-brand-collapsed' : ''}`}>
-          <div className="brand-block" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <img src="/logo.png" alt="Samarka" style={{ width: 28, height: 28, borderRadius: 6, objectFit: 'cover' }} />
-            <span className="brand-text">{collapsed ? '' : 'Samarka'}</span>
+          <div className="brand-block" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div className="brand-avatar-wrapper" style={{ position: 'relative', display: 'inline-flex' }}>
+              <img src={logoImg} alt="Samarka" style={{ width: 34, height: 34, borderRadius: 8, objectFit: 'cover' }} />
+              <span className="brand-status-dot" />
+            </div>
+            {!collapsed && (
+              <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.2 }}>
+                <span className="brand-text" style={{ fontSize: 16, fontWeight: 700, color: '#f8fafc', letterSpacing: '0.3px' }}>
+                  samarka
+                </span>
+                <span style={{ fontSize: 11, color: '#94a3b8', fontFamily: 'monospace' }}>
+                  v0.0.3
+                </span>
+              </div>
+            )}
           </div>
           {!collapsed && (
             <div className="brand-actions">
-              <DocsButton ariaLabel={t('menu.docs') || 'Documentation'} />
-              <DonateButton ariaLabel={t('menu.donate') || 'Donate'} />
               <ThemeCycleButton
                 id="theme-cycle"
                 isDark={isDark}
@@ -302,6 +328,7 @@ export default function AppSidebar() {
           items={toMenuItems(utilItems)}
           onClick={onMenuClick}
         />
+        <UptimeWidget collapsed={collapsed} />
         <div className="sider-footer">
           <VersionBadge version={panelVersion} collapsed={collapsed} />
         </div>
@@ -321,13 +348,21 @@ export default function AppSidebar() {
         onClose={() => setDrawerOpen(false)}
       >
         <div className="drawer-header">
-          <div className="brand-block" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <img src="/logo.png" alt="Samarka" style={{ width: 28, height: 28, borderRadius: 6, objectFit: 'cover' }} />
-            <span className="drawer-brand">Samarka</span>
+          <div className="brand-block" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div className="brand-avatar-wrapper" style={{ position: 'relative', display: 'inline-flex' }}>
+              <img src={logoImg} alt="Samarka" style={{ width: 34, height: 34, borderRadius: 8, objectFit: 'cover' }} />
+              <span className="brand-status-dot" />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.2 }}>
+              <span className="drawer-brand" style={{ fontSize: 16, fontWeight: 700, color: '#f8fafc' }}>
+                samarka
+              </span>
+              <span style={{ fontSize: 11, color: '#94a3b8', fontFamily: 'monospace' }}>
+                v0.0.3
+              </span>
+            </div>
           </div>
           <div className="drawer-header-actions">
-            <DocsButton ariaLabel={t('menu.docs') || 'Documentation'} />
-            <DonateButton ariaLabel={t('menu.donate') || 'Donate'} />
             <ThemeCycleButton
               id="theme-cycle-drawer"
               isDark={isDark}
@@ -363,6 +398,7 @@ export default function AppSidebar() {
           items={toMenuItems(utilItems)}
           onClick={(info) => { onMenuClick(info); setDrawerOpen(false); }}
         />
+        <UptimeWidget />
         <div className="drawer-footer">
           <VersionBadge version={panelVersion} />
         </div>
