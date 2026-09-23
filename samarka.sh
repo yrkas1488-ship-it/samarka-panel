@@ -187,8 +187,7 @@ update_menu() {
 
     local repo="${SAMARKA_REPO:-"yrkas1488-ship-it/samarka-panel"}"
     curl -fLRo /usr/bin/x-ui "https://raw.githubusercontent.com/${repo}/main/samarka.sh" 2>/dev/null || \
-    curl -fLRo /usr/bin/x-ui "https://raw.githubusercontent.com/${repo}/main/x-ui.sh" 2>/dev/null || \
-    curl -fLRo /usr/bin/x-ui "https://raw.githubusercontent.com/MHSanaei/3x-ui/main/x-ui.sh"
+    curl -fLRo /usr/bin/x-ui "https://raw.githubusercontent.com/${repo}/main/x-ui.sh"
     chmod +x /usr/bin/x-ui
     ln -sf /usr/bin/x-ui /usr/bin/samarka 2>/dev/null || true
 
@@ -202,15 +201,16 @@ update_menu() {
 }
 
 legacy_version() {
-    echo -n "Enter the panel version (like 2.4.0):"
+    echo -n "Enter the panel version (like 0.0.3):"
     read -r tag_version
 
     if [ -z "$tag_version" ]; then
         echo "Panel version cannot be empty. Exiting."
         exit 1
     fi
+    local repo="${SAMARKA_REPO:-"yrkas1488-ship-it/samarka-panel"}"
     # Use the entered panel version in the download link
-    install_command="bash <(curl -Ls "https://raw.githubusercontent.com/mhsanaei/3x-ui/v$tag_version/install.sh") v$tag_version"
+    install_command="bash <(curl -Ls "https://raw.githubusercontent.com/${repo}/v$tag_version/install.sh") v$tag_version"
 
     echo "Downloading and installing panel version $tag_version..."
     eval $install_command
@@ -274,8 +274,9 @@ uninstall() {
 
     echo ""
     echo -e "Uninstalled Successfully.\n"
+    local repo="${SAMARKA_REPO:-"yrkas1488-ship-it/samarka-panel"}"
     echo "If you need to install this panel again, you can use below command:"
-    echo -e "${green}bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.sh)${plain}"
+    echo -e "${green}bash <(curl -Ls https://raw.githubusercontent.com/${repo}/main/install.sh)${plain}"
     echo ""
     # Trap the SIGTERM signal
     trap delete_script SIGTERM
@@ -808,13 +809,16 @@ enable_bbr() {
 }
 
 update_shell() {
-    curl -fLRo /usr/bin/x-ui -z /usr/bin/x-ui https://github.com/MHSanaei/3x-ui/raw/main/x-ui.sh
+    local repo="${SAMARKA_REPO:-"yrkas1488-ship-it/samarka-panel"}"
+    curl -fLRo /usr/bin/x-ui "https://raw.githubusercontent.com/${repo}/main/samarka.sh" 2>/dev/null || \
+    curl -fLRo /usr/bin/x-ui "https://raw.githubusercontent.com/${repo}/main/x-ui.sh"
     if [[ $? != 0 ]]; then
         echo ""
         LOGE "Failed to download script, Please check whether the machine can connect Github"
         before_show_menu
     else
         chmod +x /usr/bin/x-ui
+        ln -sf /usr/bin/x-ui /usr/bin/samarka 2>/dev/null || true
         LOGI "Upgrade script succeeded, Please rerun the script"
         before_show_menu
     fi

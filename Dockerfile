@@ -31,10 +31,10 @@ RUN go build -ldflags "-w -s" -o build/x-ui main.go
 RUN ./DockerInit.sh "$TARGETARCH"
 
 # ========================================================
-# Stage: Final Image of 3x-ui
+# Stage: Final Image of Samarka Panel
 # ========================================================
 FROM alpine
-ENV TZ=Asia/Tehran
+ENV TZ=UTC
 WORKDIR /app
 
 RUN apk add --no-cache --update \

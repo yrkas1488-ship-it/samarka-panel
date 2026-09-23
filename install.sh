@@ -1365,23 +1365,14 @@ install_x-ui() {
                 tag_version=$(curl -Ls --retry 5 --retry-delay 3 --connect-timeout 15 --max-time 60 "https://api.github.com/repos/${samarka_repo}/releases" | grep '"tag_name":' | head -n 1 | sed -E 's/.*"([^"]+)".*/\1/')
             fi
             if [[ ! -n "$tag_version" ]]; then
-                echo -e "${yellow}Failed to fetch version from ${samarka_repo}, trying fallback...${plain}"
-                samarka_repo="MHSanaei/3x-ui"
-                tag_version=$(curl -Ls --retry 5 --retry-delay 3 --connect-timeout 15 --max-time 60 "https://api.github.com/repos/MHSanaei/3x-ui/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
-            fi
-            if [[ ! -n "$tag_version" ]]; then
-                echo -e "${red}Failed to fetch x-ui version, it may be due to GitHub API restrictions, please try it later${plain}"
+                echo -e "${red}Failed to fetch Samarka version, it may be due to GitHub API restrictions, please try it later${plain}"
                 exit 1
             fi
             echo -e "Got version: ${tag_version}, beginning the installation..."
             curl -fLR --retry 5 --retry-delay 3 --connect-timeout 15 --max-time 300 -o ${xui_folder}-linux-$(arch).tar.gz https://github.com/${samarka_repo}/releases/download/${tag_version}/x-ui-linux-$(arch).tar.gz
             if [[ $? -ne 0 ]]; then
-                echo -e "${yellow}Downloading from ${samarka_repo} failed, trying fallback...${plain}"
-                curl -fLR --retry 5 --retry-delay 3 --connect-timeout 15 --max-time 300 -o ${xui_folder}-linux-$(arch).tar.gz https://github.com/MHSanaei/3x-ui/releases/download/${tag_version}/x-ui-linux-$(arch).tar.gz
-                if [[ $? -ne 0 ]]; then
-                    echo -e "${red}Downloading failed, please check internet connection or GitHub access${plain}"
-                    exit 1
-                fi
+                echo -e "${red}Downloading failed, please check internet connection or GitHub access${plain}"
+                exit 1
             fi
         else
             tag_version=$1
@@ -1390,10 +1381,10 @@ install_x-ui() {
                 echo -e "${yellow}Installing the rolling dev build (tag: dev-latest)...${plain}"
             else
                 tag_version_numeric=${tag_version#v}
-                min_version="2.3.5"
+                min_version="0.0.1"
 
                 if [[ "$(printf '%s\n' "$min_version" "$tag_version_numeric" | sort -V | head -n1)" != "$min_version" ]]; then
-                    echo -e "${red}Please use a newer version (at least v2.3.5). Exiting installation.${plain}"
+                    echo -e "${red}Please use a valid version. Exiting installation.${plain}"
                     exit 1
                 fi
             fi
@@ -1402,13 +1393,12 @@ install_x-ui() {
             echo -e "Beginning to install Samarka ${tag_version}"
             curl -fLR --retry 5 --retry-delay 3 --connect-timeout 15 --max-time 300 -o ${xui_folder}-linux-$(arch).tar.gz ${url}
             if [[ $? -ne 0 ]]; then
-                echo -e "${yellow}Download from ${samarka_repo} failed, trying fallback...${plain}"
-                curl -fLR --retry 5 --retry-delay 3 --connect-timeout 15 --max-time 300 -o ${xui_folder}-linux-$(arch).tar.gz "https://github.com/MHSanaei/3x-ui/releases/download/${tag_version}/x-ui-linux-$(arch).tar.gz"
+                echo -e "${red}Download failed, please check internet connection or GitHub access${plain}"
+                exit 1
             fi
         fi
         curl -fLRo /usr/bin/x-ui-temp "https://raw.githubusercontent.com/${samarka_repo}/main/samarka.sh" 2>/dev/null || \
-        curl -fLRo /usr/bin/x-ui-temp "https://raw.githubusercontent.com/${samarka_repo}/main/x-ui.sh" 2>/dev/null || \
-        curl -fLRo /usr/bin/x-ui-temp "https://raw.githubusercontent.com/MHSanaei/3x-ui/main/x-ui.sh"
+        curl -fLRo /usr/bin/x-ui-temp "https://raw.githubusercontent.com/${samarka_repo}/main/x-ui.sh"
     fi
 
     # Stop x-ui service and remove old resources
@@ -1478,7 +1468,7 @@ install_x-ui() {
     fi
 
     if [[ $release == "alpine" ]]; then
-        curl -fLRo /etc/init.d/x-ui https://raw.githubusercontent.com/MHSanaei/3x-ui/main/x-ui.rc
+        curl -fLRo /etc/init.d/x-ui https://raw.githubusercontent.com/${samarka_repo}/main/x-ui.rc
         if [[ $? -ne 0 ]]; then
             echo -e "${red}Failed to download x-ui.rc${plain}"
             exit 1
@@ -1535,13 +1525,13 @@ install_x-ui() {
             echo -e "${yellow}Service files not found in tar.gz, downloading from GitHub...${plain}"
             case "${release}" in
                 ubuntu | debian | armbian)
-                    curl -fLRo ${xui_service}/x-ui.service https://raw.githubusercontent.com/MHSanaei/3x-ui/main/x-ui.service.debian > /dev/null 2>&1
+                    curl -fLRo ${xui_service}/x-ui.service https://raw.githubusercontent.com/${samarka_repo}/main/x-ui.service.debian > /dev/null 2>&1
                     ;;
                 arch | manjaro | parch)
-                    curl -fLRo ${xui_service}/x-ui.service https://raw.githubusercontent.com/MHSanaei/3x-ui/main/x-ui.service.arch > /dev/null 2>&1
+                    curl -fLRo ${xui_service}/x-ui.service https://raw.githubusercontent.com/${samarka_repo}/main/x-ui.service.arch > /dev/null 2>&1
                     ;;
                 *)
-                    curl -fLRo ${xui_service}/x-ui.service https://raw.githubusercontent.com/MHSanaei/3x-ui/main/x-ui.service.rhel > /dev/null 2>&1
+                    curl -fLRo ${xui_service}/x-ui.service https://raw.githubusercontent.com/${samarka_repo}/main/x-ui.service.rhel > /dev/null 2>&1
                     ;;
             esac
 

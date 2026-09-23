@@ -1,227 +1,104 @@
 # 🦊 Samarka Panel v0.0.3
 
 <p align="center">
-  <img alt="Samarka Logo" src="./frontend/public/logo.png" width="120" style="border-radius: 50%;">
+  <img alt="Samarka Logo" src="./frontend/public/logo.png" width="130" style="border-radius: 50%;">
 </p>
 
 <p align="center">
-  <b>Кастомная панель управления Xray-core с предустановками обхода блокировок для РФ</b>
+  <b>Современная панель управления Xray-core с пресетами Reality, обходом белых списков РФ через CDN и кластерной архитектурой</b>
+</p>
+
+<p align="center">
+  <a href="README.md">English</a> | <a href="README.ru_RU.md">Русский</a> | <a href="README.uk_UA.md">Українська</a>
 </p>
 
 ---
 
-### ✨ Нововведения в Samarka 0.0.3:
-- **Премиальный темный редизайн**: глубокая сланцево-синяя палитра (`#0c1824` / `#132337`) с акцентными янтарными «пилюлями» меню (`#f59e0b` / `#d97706`).
-- **Лаконичный сайдбар**: только ключевые пункты (Дашборд, Входящие & Reality, Клиенты, Исходящие, Маршрутизация, Настройки). Второстепенные разделы (Группы, Узлы, Хосты, Конфигурации Xray, API Docs) перенесены в Настройки.
-- **Зеленый индикатор онлайна** на аватаре Samarka и статус-виджет **UPTIME / System Normal** в сайдбаре.
-- **Ограничение языков**: оставлены только 3 основных языка — **Русский (`ru-RU`)**, **English (`en-US`)** и **Українська (`uk-UA`)**.
-- **Интерактивный выбор языка в `install.sh`** при установке панели на сервер.
-- **Выделенная вкладка «Привязка домена к панели»** в Настройках: DNS A-запись, Let's Encrypt Certbot, Nginx reverse proxy и кнопка Cloudflare.
-- **Надежное отображение логотипа**: импорт через asset pipeline (больше никаких 404 при произвольном `webBasePath`).
+## 🌟 Ключевые особенности Samarka Panel
+
+- **🎨 Эксклюзивный редизайн интерфейса**:
+  - Верхний статус-бар: мониторинг `HOST`, поисковая строка `[Search: Cmd+K]`, скорости трафика в реальном времени (`↓ ... Mbps`, `↑ ... Mbps`), нагрузка RAM и CPU в золотисто-янтарной палитре (`#f59e0b`).
+  - **Active Inbounds**: карточки активных входящих подключений с крупным номером порта (`:8443`, `:443`), параметрами `sni`, `ShortId`, числом пользователей, зеленой кнопкой **`Get QR/Link`** и тумблером мгновенного включения/отключения `Active`.
+  - **Live Sniffer**: интерактивная таблица соединений (`Time` | `Client` | `Protocol` | `Target Domain` | `Status`) с цветными статусами (`Direct 🟢`, `Proxy 🔵`, `Blocked 🔴`) и автообновлением трафика в реальном времени.
+  - Лаконичная навигация: только нужные разделы в сайдбаре (Дашборд, Входящие & Reality, Клиенты, Исходящие, Маршрутизация, Настройки).
+- **👑 Архитектура кластера серверов**:
+  - **Глав-Главный сервер (Super-Master)**: централизованный пульт мониторинга и координации всех серверов сети с мгновенной привязкой подчиненных узлов по ссылке и валидным API-токенам.
+  - **Главный сервер (Master)**: управление клиентами, генерация ключей и быстрых ссылок `samarka://join?...` для подчиненных узлов.
+  - **Второстепенный сервер (Worker)**: режим Origin для CDN сетей или узел Двойного VPN (Relay/Exit).
+- **☁️ Обход блокировок через российские CDN (порт 443 / XHTTP)**:
+  - Готовые пресеты для Yandex Cloud CDN, VK Cloud, Selectel и Cloudflare.
+  - Поддержка метода `OPTIONS` (с маппингом в POST через Nginx), заголовка `X-Cache` и обфускации padding `dc`.
+  - Встроенное создание CDN Inbound на 443 порту в 1 клик прямо из веб-интерфейса.
+- **⚡ Быстрые шаблоны VLESS Reality (порт 8443)**:
+  - Автоматическая маскировка под популярные домены (`максвайб.рф` / `nemaxvibe.lol`).
+  - Готовые конфигурации Reality TCP и Reality gRPC со сгенерированными ключами X25519.
+- **🌐 Привязка домена и SSL**:
+  - Выделенная вкладка в настройках с интеграцией Cloudflare DNS, генерацией сертификатов Let's Encrypt и шаблоном Nginx Reverse Proxy.
+- **🌍 3 поддерживаемых языка**:
+  - Русский (`ru-RU`) — язык по умолчанию
+  - English (`en-US`)
+  - Українська (`uk-UA`)
+  - Интерактивный выбор языка прямо во время установки в консоли.
 
 ---
 
-### 🚀 Базовые возможности Samarka:
-- **Фирменный логотип и брендинг Samarka** на панели, в сайдбаре, на странице авторизации и фавиконе.
-- **Дефолтный порт панели 2053** (для протоколов 8443, для CDN строго 443).
-- **Мастер настройки роли сервера (Onboarding Wizard) прямо в браузере**: выбор роли Главный / Второстепенный / Глав-Главный и CDN-параметров при первом входе.
-- **Быстрые маскировки VLESS Reality**:
-  - `максвайб.рф` (`xn--80aak4aef1h.xn--p1ai:443`)
-  - `nemaxvibe.lol` (`nemaxvibe.lol:443`)
-  - Возможность добавить свой собственный домен для маскировки
-- **Быстрые шаблоны входящих подключений (1-click пресеты)**:
-  - `VLESS Reality + gRPC` (порт 8443, fingerprint: randomized)
-  - `VLESS Reality + TCP` (порт 8443, fingerprint: randomized)
-  - `VLESS XHTTP + Yandex Cloud CDN` (порт 443, обход белых списков РФ)
-  - `VLESS WS + CDN` (порт 443, Cloudflare)
-- **Готовые параметры для российских CDN (Yandex Cloud, VK Cloud, Selectel)** с обфускацией padding (`X-Cache`, `tokenish`, `packet-up`, HTTP method `OPTIONS`, Nginx rewrite).
-- **Иерархия кластера серверов**:
-  - **Глав-Главный сервер (Super-Master)**: централизованный пульт управления всеми серверами и правами.
-  - **Главный сервер (Master)**: создание конфигураций и генерация быстрых ссылок `samarka://join?...` для подчиненных.
-  - **Второстепенный сервер (Worker)**: подключение в 1 клик с выбором режима:
-    - *«Способ через CDN»* (Origin для CDN сетей)
-    - *«Способ Двойного VPN»* (Relay / Exit узел цепи)
+## 🚀 Быстрый старт
+
+Установка выполняется одной командой в терминале Linux (Ubuntu, Debian, CentOS, AlmaLinux, Rocky, Alpine, Arch):
+
+```bash
+bash <(curl -Ls https://raw.githubusercontent.com/yrkas1488-ship-it/samarka-panel/main/install.sh)
+```
+
+### Параметры по умолчанию при установке:
+* **Порт веб-панели:** `2053` (настраиваемый)
+* **Прямые входящие подключения Reality:** `8443`
+* **CDN-подключения:** `443`
+* **База данных:** SQLite (`/etc/x-ui/x-ui.db`) или PostgreSQL
+
+После завершения установки в терминале отобразятся учетные данные и адрес для входа. При первом открытии веб-панели вас встретит удобный **Мастер первичной настройки**, который поможет выбрать роль сервера и при необходимости настроить CDN в 1 клик.
+
+Управление службой на сервере осуществляется командой `samarka` или `x-ui`.
 
 ---
 
-**Samarka Panel** создана на базе высокопроизводительного стека 3X-UI v3.4.2 (React 19 + TypeScript + Ant Design 6, Go 1.26 + Gin + GORM, Xray-core v26.6.27).
+## 📦 Базы данных
 
-- **Многопротокольные входящие подключения** — VLESS, VMess, Trojan, Shadowsocks, WireGuard, Hysteria2, HTTP, SOCKS (Mixed), Dokodemo-door / Tunnel и TUN.
-- **Современные транспорты и безопасность** — TCP (Raw), mKCP, WebSocket, gRPC, HTTPUpgrade и XHTTP, защищённые с помощью TLS, XTLS и REALITY.
-- **Fallback** — обслуживание нескольких протоколов на одном порту (например, VLESS и Trojan на 443) с помощью функции fallback в Xray.
-- **Управление по каждому клиенту** — квоты трафика, даты истечения, лимиты IP, статус «онлайн» в реальном времени, а также ссылки для общего доступа, QR-коды и подписки в один клик.
-- **Статистика трафика** — по каждому входящему, по каждому клиенту и по каждому исходящему, с возможностью сброса.
-- **Поддержка нескольких узлов** — управление и масштабирование на несколько серверов из одной панели.
-- **Исходящие подключения и маршрутизация** — WARP, NordVPN, пользовательские правила маршрутизации, балансировщики нагрузки и цепочки исходящих прокси.
-- **Встроенный сервер подписок** с несколькими форматами вывода и [пользовательскими шаблонами страниц](docs/custom-subscription-templates.md).
-- **Telegram-бот** для удалённого мониторинга и управления.
-- **RESTful API** с документацией Swagger внутри панели.
-- **Гибкое хранилище** — SQLite (по умолчанию) или PostgreSQL.
-- **13 языков интерфейса** с тёмной и светлой темами.
-- **Интеграция с Fail2ban** для применения лимитов IP по каждому клиенту.
+Samarka Panel поддерживает два типа хранилища:
 
-## Скриншоты
+1. **SQLite** (по умолчанию) — один файл базы данных `/etc/x-ui/x-ui.db`. Идеально подходит для автономных серверов и нагрузок до 500+ активных клиентов.
+2. **PostgreSQL** — рекомендуется для крупных распределенных кластеров с большим количеством нод и пользователей. Установщик может настроить локальный PostgreSQL автоматически или подключиться к внешнему серверу.
 
-<details>
-<summary>Нажмите, чтобы развернуть</summary>
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./media/01-overview-dark.png">
-  <img alt="Overview" src="./media/01-overview-light.png">
-</picture>
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./media/02-add-inbound-dark.png">
-  <img alt="Inbounds" src="./media/02-add-inbound-light.png">
-</picture>
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./media/03-add-client-dark.png">
-  <img alt="Add client" src="./media/03-add-client-light.png">
-</picture>
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./media/05-add-nodes-dark.png">
-  <img alt="Configs" src="./media/05-add-nodes-light.png">
-</picture>
-
-</details>
-
-## Быстрый старт
-
+Миграция с SQLite на PostgreSQL в любой момент:
 ```bash
-bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.sh)
+x-ui migrate-db --dsn "postgres://user:password@127.0.0.1:5432/samarka?sslmode=disable"
 ```
 
-Чтобы установить конкретную версию, добавьте её тег (например, `v3.4.0`):
+---
 
-```bash
-bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.sh) v3.4.0
-```
-
-Чтобы установить скользящую **dev**-сборку (новейший предварительный релиз по каждому коммиту из ветки `main`, а не стабильный релиз), передайте `dev-latest`:
-
-```bash
-bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.sh) dev-latest
-```
-
-Во время установки генерируются случайные имя пользователя, пароль и путь доступа. После установки выполните `x-ui`, чтобы открыть меню управления, где можно запускать/останавливать сервис, просматривать или сбрасывать учётные данные для входа, управлять SSL-сертификатами и многое другое.
-
-Полную документацию смотрите в [вики проекта](https://github.com/MHSanaei/3x-ui/wiki).
-
-### Автоматическая установка
-
-Установщик также работает в **неинтерактивном** режиме для cloud-init.
-Задайте `XUI_NONINTERACTIVE=1` (или передайте по конвейеру без TTY), и установка пройдёт от начала до конца
-без единого запроса: будут сгенерированы случайные учётные данные и записаны в
-`/etc/x-ui/install-result.env`. Смотрите [`deploy/`](deploy/) для:
-
-- [Cloud-init user-data](deploy/cloud-init/) — автоматическая установка в любом облаке (Hetzner/AWS/DO/Vultr/GCP/Azure/Oracle)
-- [Заметки по Hetzner Cloud](deploy/marketplace/hetzner/) — развёртывание на Hetzner на базе cloud-init
-
-## Поддерживаемые платформы
-
-**Операционные системы:** Ubuntu, Debian, Armbian, Fedora, CentOS, RHEL, AlmaLinux, Rocky Linux, Oracle Linux, Amazon Linux, Virtuozzo, Arch, Manjaro, Parch, openSUSE (Tumbleweed / Leap), Alpine и Windows.
-
-**Архитектуры:** `amd64` · `386` · `arm64` (aarch64) · `armv7` · `armv6` · `armv5` · `s390x`.
-
-## Варианты базы данных
-
-3X-UI поддерживает два бэкенда, выбираемых при установке:
-
-- **SQLite** (по умолчанию) — единый файл по пути `/etc/x-ui/x-ui.db`. Без настройки, идеально для небольших и средних развёртываний.
-- **PostgreSQL** — рекомендуется при большом числе клиентов или конфигурациях с несколькими узлами. Установщик может установить PostgreSQL локально за вас или принять DSN к существующему серверу.
-
-Во время выполнения бэкенд выбирается через переменные окружения (установщик записывает их за вас в `/etc/default/x-ui`):
-
-```
-XUI_DB_TYPE=postgres
-XUI_DB_DSN=postgres://xui:password@127.0.0.1:5432/xui?sslmode=disable
-```
-
-### Перенос существующей установки SQLite в PostgreSQL
-
-```bash
-x-ui migrate-db --dsn "postgres://xui:password@127.0.0.1:5432/xui?sslmode=disable"
-# затем задайте XUI_DB_TYPE и XUI_DB_DSN в /etc/default/x-ui и перезапустите:
-systemctl restart x-ui
-```
-
-Исходный файл SQLite остаётся нетронутым; удалите его вручную после проверки нового бэкенда.
-
-### Docker
-
-Команда по умолчанию `docker compose up -d` продолжает использовать SQLite. Чтобы запустить со встроенным сервисом PostgreSQL, раскомментируйте две строки переменных окружения `XUI_DB_*` в `docker-compose.yml` и запустите с профилем:
-
-```bash
-docker compose --profile postgres up -d
-```
-
-Образ включает Fail2ban (включён по умолчанию) для применения **лимитов IP** по каждому клиенту. Fail2ban блокирует нарушителей с помощью `iptables`, что требует возможности `NET_ADMIN`. `docker-compose.yml` уже предоставляет её через `cap_add`; если вы вместо этого запускаете контейнер через `docker run`, добавьте возможности самостоятельно, иначе блокировки будут регистрироваться, но никогда не применяться:
-
-```bash
-docker run -d --cap-add=NET_ADMIN --cap-add=NET_RAW ... ghcr.io/mhsanaei/3x-ui
-```
-
-## Переменные окружения
+## ⚙️ Переменные окружения
 
 | Переменная | Описание | По умолчанию |
-| --- | --- | --- |
-| `XUI_DB_TYPE` | Бэкенд базы данных: `sqlite` или `postgres` | `sqlite` |
-| `XUI_DB_DSN` | Строка подключения PostgreSQL (когда `XUI_DB_TYPE=postgres`) | — |
-| `XUI_DB_FOLDER` | Каталог для файла базы данных SQLite | `/etc/x-ui` |
-| `XUI_DB_MAX_OPEN_CONNS` | Максимум открытых соединений (пул PostgreSQL) | — |
-| `XUI_DB_MAX_IDLE_CONNS` | Максимум простаивающих соединений (пул PostgreSQL) | — |
-| `XUI_INIT_WEB_BASE_PATH` | Начальный URI-путь для веб-панели | `/` |
-| `XUI_ENABLE_FAIL2BAN` | Включить применение лимитов IP на основе Fail2ban | `true` |
+|---|---|---|
+| `XUI_PORT` | Порт веб-панели | `2053` |
+| `XUI_DB_TYPE` | Тип БД (`sqlite` или `postgres`) | `sqlite` |
+| `XUI_DB_DSN` | DSN подключения к PostgreSQL | — |
+| `XUI_DB_FOLDER` | Путь к папке базы SQLite | `/etc/x-ui` |
+| `XUI_INIT_WEB_BASE_PATH` | Базовый путь URL панели | `/` |
+| `XUI_ENABLE_FAIL2BAN` | Защита от перебора и ограничение IP клиентов через Fail2ban | `true` |
 | `XUI_LOG_LEVEL` | Уровень логирования (`debug`, `info`, `warning`, `error`) | `info` |
-| `XUI_DEBUG` | Включить режим отладки | `false` |
-| `XUI_TUNNEL_HEALTH_MONITOR` | Включить монитор состояния туннеля (опрашивает URL и перезапускает xray после многократных сбоев; перезапуск отключает всех клиентов) | `false` |
-| `XUI_TUNNEL_HEALTH_PROXY` | Прокси, через который отправляется проба; укажите локальный входящий xray, чтобы проба проверяла туннель (например, `socks5://127.0.0.1:1080`). Пустое значение означает, что проба проверяет только связь с хостом | — |
-| `XUI_TUNNEL_HEALTH_URL` | URL, опрашиваемый для проверки состояния туннеля | `https://www.cloudflare.com/cdn-cgi/trace` |
-| `XUI_TUNNEL_HEALTH_INTERVAL` | Интервал между пробами | `30s` |
-| `XUI_TUNNEL_HEALTH_TIMEOUT` | Таймаут на одну пробу | `10s` |
-| `XUI_TUNNEL_HEALTH_FAILURES` | Число последовательных сбоев до запуска перезапуска | `3` |
-| `XUI_TUNNEL_HEALTH_COOLDOWN` | Минимальная задержка между последовательными перезапусками | `5m` |
 
-## Поддерживаемые языки
+---
 
-Интерфейс панели доступен на 13 языках:
+## 🤝 Участие в разработке
 
-English · فارسی · العربية · 中文（简体） · 中文（繁體） · Español · Русский · Українська · Türkçe · Tiếng Việt · 日本語 · Bahasa Indonesia · Português (Brasil)
+Мы приветствуем предложения, исправления и улучшения! Перед созданием Pull Request, пожалуйста, ознакомьтесь с [CONTRIBUTING.md](CONTRIBUTING.md).
 
-## Участие в разработке
+* **Репозиторий проекта:** [github.com/yrkas1488-ship-it/samarka-panel](https://github.com/yrkas1488-ship-it/samarka-panel)
+* **Сообщить об ошибке или предложить идею:** [GitHub Issues](https://github.com/yrkas1488-ship-it/samarka-panel/issues)
 
-Вклад приветствуется. Пожалуйста, прочитайте [руководство по участию](/CONTRIBUTING.md), прежде чем открывать issue или pull request.
+---
 
-## Особая благодарность
+## 📜 Лицензия
 
-- [alireza0](https://github.com/alireza0/)
-
-## Благодарности
-
-- [Iran v2ray rules](https://github.com/chocolate4u/Iran-v2ray-rules) (Лицензия: **GPL-3.0**): _Улучшенные правила маршрутизации для v2ray/xray и v2ray/xray-clients со встроенными иранскими доменами и фокусом на безопасность и блокировку рекламы._
-- [Russia v2ray rules](https://github.com/runetfreedom/russia-v2ray-rules-dat) (Лицензия: **GPL-3.0**): _Этот репозиторий содержит автоматически обновляемые правила маршрутизации V2Ray на основе данных о заблокированных доменах и адресах в России._
-
-## Инструменты сообщества
-
-Инструменты и интеграции, созданные сообществом вокруг 3x-ui.
-
-- [terraform-provider-3x-ui](https://github.com/batonogov/terraform-provider-threexui) (Лицензия: **MIT**): _Управление входящими, клиентами, настройками панели и конфигурацией Xray через код с помощью Terraform / OpenTofu._
-
-## Поддержка проекта
-
-**Если этот проект полезен для вас, вы можете поставить ему**:star2:
-
-<a href="https://www.buymeacoffee.com/MHSanaei" target="_blank">
-<img src="./media/default-yellow.png" alt="Buy Me A Coffee" style="height: 70px !important;width: 277px !important;" >
-</a>
-
-</br>
-<a href="https://nowpayments.io/donation/hsanaei" target="_blank" rel="noreferrer noopener">
-   <img src="./media/donation-button-black.svg" alt="Crypto donation button by NOWPayments">
-</a>
-
-## Звезды с течением времени
-
-[![Stargazers over time](https://starchart.cc/MHSanaei/3x-ui.svg?variant=adaptive)](https://starchart.cc/MHSanaei/3x-ui)
+Проект распространяется под свободной лицензией **GNU General Public License v3.0 (GPL-3.0)**. Подробности приведены в файле [LICENSE](LICENSE).
