@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Card, Input, Button, Space, Typography, Steps, Alert, Divider } from 'antd';
 import { GlobalOutlined, LinkOutlined, CopyOutlined, CheckOutlined, SafetyCertificateOutlined } from '@ant-design/icons';
 
-const { Text, Paragraph } = Typography;
+const { Text } = Typography;
 
 interface DomainBindingCardProps {
   serverIp?: string;
@@ -14,7 +14,7 @@ interface DomainBindingCardProps {
 export default function DomainBindingCard({
   serverIp = 'ВАШ_IP_СЕРВЕРА',
   panelPort = 2053,
-  webBasePath = '/',
+  webBasePath: _webBasePath = '/',
   onApplyDomainCert,
 }: DomainBindingCardProps) {
   const [customDomain, setCustomDomain] = useState('');

@@ -1,23 +1,21 @@
 import { useState, useEffect } from 'react';
-import { Modal, Typography, Card, Input, Button, Space, Alert, Tabs, Tag, Table, Spin, message } from 'antd';
+import { Modal, Typography, Card, Input, Button, Space, Alert, Tabs, Tag, Table, message } from 'antd';
 import {
   CrownOutlined,
   LinkOutlined,
   CopyOutlined,
   CheckOutlined,
   CloudServerOutlined,
-  SafetyCertificateOutlined,
-  NodeIndexOutlined,
   ThunderboltOutlined,
   CheckCircleOutlined,
   CloseCircleOutlined,
   ReloadOutlined,
 } from '@ant-design/icons';
 import { HttpUtil } from '@/utils';
-import { useNodesQuery } from '@/api/queries/useNodesQuery';
+import { useNodesQuery, type NodeRecord } from '@/api/queries/useNodesQuery';
 import { useNodeMutations } from '@/api/queries/useNodeMutations';
 
-const { Text, Paragraph } = Typography;
+const { Text } = Typography;
 
 interface SuperMasterModalProps {
   open: boolean;
@@ -140,8 +138,9 @@ export default function SuperMasterModal({ open, onClose, onAddSubordinate }: Su
         message.error(addRes?.msg || 'Не удалось зарегистрировать сервер в кластере');
         setTestStatus(`Ошибка: ${addRes?.msg || 'Не удалось сохранить'}`);
       }
-    } catch (e: any) {
-      message.error('Ошибка разбора ссылки: ' + (e?.message || 'Неверная ссылка'));
+    } catch (e: unknown) {
+      const err = e as Error;
+      message.error('Ошибка разбора ссылки: ' + (err?.message || 'Неверная ссылка'));
       setTestStatus(null);
     } finally {
       setConnecting(false);
@@ -153,7 +152,7 @@ export default function SuperMasterModal({ open, onClose, onAddSubordinate }: Su
       title: 'Имя',
       dataIndex: 'name',
       key: 'name',
-      render: (val: string, record: any) => (
+      render: (val: string, record: NodeRecord) => (
         <Space>
           <CloudServerOutlined style={{ color: '#f59e0b' }} />
           <Text strong style={{ color: '#f8fafc' }}>{val}</Text>
@@ -183,7 +182,7 @@ export default function SuperMasterModal({ open, onClose, onAddSubordinate }: Su
     {
       title: 'Нагрузка (CPU / RAM)',
       key: 'load',
-      render: (_: any, record: any) => (
+      render: (_: unknown, record: NodeRecord) => (
         <span style={{ fontSize: 12 }}>
           CPU: {record.cpuPct ? `${record.cpuPct.toFixed(0)}%` : '-'} | RAM: {record.memPct ? `${record.memPct.toFixed(0)}%` : '-'}
         </span>

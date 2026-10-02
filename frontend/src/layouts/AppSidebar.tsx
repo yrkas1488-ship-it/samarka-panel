@@ -11,11 +11,9 @@ import {
   ClusterOutlined,
   CodeOutlined,
   DashboardOutlined,
-  DatabaseOutlined,
   ExportOutlined,
   GithubOutlined,
   GlobalOutlined,
-  HeartOutlined,
   ImportOutlined,
   LogoutOutlined,
   MailOutlined,
@@ -23,7 +21,6 @@ import {
   MessageOutlined,
   MoonFilled,
   MoonOutlined,
-  ReadOutlined,
   SafetyOutlined,
   SettingOutlined,
   SunOutlined,
@@ -42,8 +39,6 @@ import logoImg from '@/assets/logo.png';
 import './AppSidebar.css';
 
 const SIDEBAR_COLLAPSED_KEY = 'isSidebarCollapsed';
-const DONATE_URL = 'https://github.com/yrkas1488-ship-it/samarka-panel';
-const DOCS_URL = 'https://github.com/yrkas1488-ship-it/samarka-panel#readme';
 const REPO_URL = 'https://github.com/yrkas1488-ship-it/samarka-panel';
 const LOGOUT_KEY = '__logout__';
 
@@ -70,36 +65,6 @@ function readCollapsed(): boolean {
   } catch {
     return false;
   }
-}
-
-function DonateButton({ ariaLabel }: { ariaLabel: string }) {
-  return (
-    <a
-      href={DONATE_URL}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="sidebar-donate"
-      aria-label={ariaLabel}
-      title={ariaLabel}
-    >
-      <HeartOutlined />
-    </a>
-  );
-}
-
-function DocsButton({ ariaLabel }: { ariaLabel: string }) {
-  return (
-    <a
-      href={DOCS_URL}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="sidebar-docs"
-      aria-label={ariaLabel}
-      title={ariaLabel}
-    >
-      <ReadOutlined />
-    </a>
-  );
 }
 
 function VersionBadge({ version, collapsed }: { version: string; collapsed?: boolean }) {
@@ -297,7 +262,7 @@ export default function AppSidebar() {
                   Панель Самарка
                 </span>
                 <span style={{ fontSize: 11, color: '#f59e0b', fontFamily: 'monospace', fontWeight: 600 }}>
-                  v0.1.1
+                  v0.1.1.1
                 </span>
               </div>
             )}
@@ -362,7 +327,7 @@ export default function AppSidebar() {
                 Панель Самарка
               </span>
               <span style={{ fontSize: 11, color: '#f59e0b', fontFamily: 'monospace', fontWeight: 600 }}>
-                v0.1.1
+                v0.1.1.1
               </span>
             </div>
           </div>

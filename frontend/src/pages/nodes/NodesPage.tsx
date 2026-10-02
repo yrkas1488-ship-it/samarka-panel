@@ -327,7 +327,7 @@ export default function NodesPage() {
         <SuperMasterModal
           open={superMasterOpen}
           onClose={() => setSuperMasterOpen(false)}
-          onAddSubordinate={(link) => {
+          onAddSubordinate={(_link) => {
             setFormMode('add');
             setFormNode(null);
             setFormOpen(true);

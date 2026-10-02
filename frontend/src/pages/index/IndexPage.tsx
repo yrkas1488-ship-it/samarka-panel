@@ -1,22 +1,18 @@
 import { lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
   Button,
-  Card,
   Col,
   ConfigProvider,
   Input,
   Layout,
-  Modal,
   Row,
   Space,
-  Spin,
   Switch,
   Tag,
-  Typography,
   message,
 } from 'antd';
+import type { InputRef } from 'antd';
 import {
   RocketOutlined,
   ControlOutlined,
@@ -26,19 +22,16 @@ import {
   CloudServerOutlined,
   ReloadOutlined,
   CrownOutlined,
-  PlusOutlined,
-  SafetyCertificateOutlined,
 } from '@ant-design/icons';
 
-import { HttpUtil, ClipboardManager, RandomUtil } from '@/utils';
+import { HttpUtil, RandomUtil, ClipboardManager } from '@/utils';
 import { useTheme } from '@/hooks/useTheme';
 import { useStatusQuery } from '@/api/queries/useStatusQuery';
-import { useMediaQuery } from '@/hooks/useMediaQuery';
 import AppSidebar from '@/layouts/AppSidebar';
 import { setMessageInstance } from '@/utils/messageBus';
 import { coerceInboundJsonField } from '@/models/dbinbound';
 import { genInboundLinks, preferPublicHost } from '@/lib/xray/inbound-link';
-import { inboundFromDb } from '@/lib/xray/inbound-from-db';
+import { inboundFromDb, type DbInboundLike } from '@/lib/xray/inbound-from-db';
 
 import SamarkaSetupWizardModal from './SamarkaSetupWizardModal';
 import SuperMasterModal from '../nodes/SuperMasterModal';
@@ -47,7 +40,17 @@ const XrayLogModal = lazy(() => import('./XrayLogModal'));
 
 import './IndexPage.css';
 
-const { Text } = Typography;
+interface InboundStreamSettingsLike {
+  network?: string;
+  realitySettings?: { serverNames?: string[]; shortIds?: string[] };
+  tlsSettings?: { serverName?: string };
+  wsSettings?: { headers?: { Host?: string } };
+}
+
+interface InboundSettingsLike {
+  method?: string;
+  clients?: unknown[];
+}
 
 interface ParsedInboundCard {
   id: number;
@@ -61,7 +64,7 @@ interface ParsedInboundCard {
   cipher: string;
   userCount: number;
   dataCounter: string;
-  raw: any;
+  raw: DbInboundLike & { id: number; remark?: string; enable?: boolean; port: number; protocol: string; up?: number; down?: number };
 }
 
 interface SnifferRow {
@@ -81,11 +84,9 @@ function formatTrafficSpeed(bytesPerSec: number): string {
 }
 
 export default function IndexPage() {
-  const { t } = useTranslation();
   const navigate = useNavigate();
-  const { isDark, isUltra, antdThemeConfig } = useTheme();
-  const { status, fetched, refresh: refreshStatus } = useStatusQuery();
-  const { isMobile } = useMediaQuery();
+  const { antdThemeConfig } = useTheme();
+  const { status, refresh: refreshStatus } = useStatusQuery();
   const [messageApi, messageContextHolder] = message.useMessage();
 
   useEffect(() => {
@@ -98,7 +99,7 @@ export default function IndexPage() {
   const [creatingQuickInbound, setCreatingQuickInbound] = useState(false);
 
   const [searchQuery, setSearchQuery] = useState('');
-  const searchInputRef = useRef<any>(null);
+  const searchInputRef = useRef<InputRef>(null);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -117,7 +118,7 @@ export default function IndexPage() {
   const [superMasterOpen, setSuperMasterOpen] = useState(false);
   const [xrayLogsOpen, setXrayLogsOpen] = useState(false);
   const [qrModalOpen, setQrModalOpen] = useState(false);
-  const [selectedInboundForQr, setSelectedInboundForQr] = useState<any>(null);
+  const [selectedInboundForQr, setSelectedInboundForQr] = useState<(DbInboundLike & { remark?: string }) | null>(null);
 
   const serverRole = localStorage.getItem('samarka_server_role') || 'master';
   const isSuperMaster = serverRole === 'super_master';
@@ -132,11 +133,11 @@ export default function IndexPage() {
   const fetchInboundsList = useCallback(async () => {
     setLoadingInbounds(true);
     try {
-      const res = await HttpUtil.get<any[]>('/panel/api/inbounds/list');
+      const res = await HttpUtil.get<Array<DbInboundLike & { id: number; remark?: string; enable?: boolean; port: number; protocol: string; up?: number; down?: number }>>('/panel/api/inbounds/list');
       if (res?.success && Array.isArray(res.obj)) {
         const parsed: ParsedInboundCard[] = res.obj.map((ib) => {
-          const stream = typeof ib.streamSettings === 'string' ? coerceInboundJsonField(ib.streamSettings) : (ib.streamSettings || {});
-          const settings = typeof ib.settings === 'string' ? coerceInboundJsonField(ib.settings) : (ib.settings || {});
+          const stream = (typeof ib.streamSettings === 'string' ? coerceInboundJsonField(ib.streamSettings) : (ib.streamSettings || {})) as InboundStreamSettingsLike;
+          const settings = (typeof ib.settings === 'string' ? coerceInboundJsonField(ib.settings) : (ib.settings || {})) as InboundSettingsLike;
 
           const sni =
             stream?.realitySettings?.serverNames?.[0] ||
@@ -215,7 +216,7 @@ export default function IndexPage() {
   const fetchSnifferLogs = useCallback(async () => {
     setLoadingLogs(true);
     try {
-      const msg = await HttpUtil.post<any[]>('/panel/api/server/xraylogs/20', {
+      const msg = await HttpUtil.post<Array<{ DateTime?: string; Email?: string; FromAddress?: string; Inbound?: string; ToAddress?: string; Event?: number }>>('/panel/api/server/xraylogs/20', {
         showDirect: true,
         showBlocked: true,
         showProxy: true,
@@ -328,8 +329,9 @@ export default function IndexPage() {
       } else {
         messageApi.error(res?.msg || 'Не удалось создать входящее подключение');
       }
-    } catch (e: any) {
-      messageApi.error('Ошибка: ' + (e?.message || 'Сетевая ошибка'));
+    } catch (e: unknown) {
+      const err = e as Error;
+      messageApi.error('Ошибка: ' + (err?.message || 'Сетевая ошибка'));
     } finally {
       setCreatingQuickInbound(false);
     }
@@ -392,8 +394,9 @@ export default function IndexPage() {
       } else {
         messageApi.error(res?.msg || 'Не удалось создать CDN подключение (порт 443 занят?)');
       }
-    } catch (e: any) {
-      messageApi.error('Ошибка: ' + (e?.message || 'Сетевая ошибка'));
+    } catch (e: unknown) {
+      const err = e as Error;
+      messageApi.error('Ошибка: ' + (err?.message || 'Сетевая ошибка'));
     } finally {
       setCreatingQuickInbound(false);
     }
@@ -425,12 +428,12 @@ export default function IndexPage() {
 
   const hostName = status?.publicIP?.ipv4 || window.location.hostname || 'nl-ams-01';
   const memUsedMb = Math.round((status?.mem?.current || 52428800) / (1024 * 1024));
-  const rawCpu = typeof status?.cpu?.percent === 'number'
-    ? status.cpu.percent
-    : typeof status?.cpu === 'number'
-    ? status.cpu
-    : typeof (status?.cpu as any)?.current === 'number'
-    ? (status.cpu as any).current
+  const rawCpu = status?.cpu
+    ? (typeof status.cpu.percent === 'number'
+      ? status.cpu.percent
+      : typeof status.cpu.current === 'number'
+      ? status.cpu.current
+      : 2)
     : 2;
   const cpuPct = (typeof rawCpu === 'number' && !isNaN(rawCpu) ? rawCpu : 2).toFixed(0);
 
@@ -484,7 +487,7 @@ export default function IndexPage() {
               </div>
             </div>
 
-            {/* 2. TOP BANNER CARD - Samarka Panel v0.1.1 with Bilingual Description */}
+            {/* 2. TOP BANNER CARD - Samarka Panel v0.1.1.1 with Bilingual Description */}
             <div className="samarka-banner-card">
               <div className="samarka-banner-content">
                 <Space align="start" size={14} style={{ flex: 1, minWidth: 280 }}>
@@ -493,7 +496,7 @@ export default function IndexPage() {
                   </div>
                   <div>
                     <div className="samarka-banner-title">
-                      🦊 Панель Самарка v0.1.1 · Samarka Xray Panel
+                      🦊 Панель Самарка v0.1.1.1 · Samarka Xray Panel
                     </div>
                     <div className="samarka-banner-subtitle">
                       Роль узла / Node role: <span className="samarka-role-text">{roleLabel}</span> | Веб-порт / Web port: <b className="samarka-amber-bold">2053</b> | Протоколы / Protocols: <b className="samarka-amber-bold">Reality 8443</b> / CDN <b className="samarka-amber-bold">443</b>

@@ -201,7 +201,7 @@ update_menu() {
 }
 
 legacy_version() {
-    echo -n "Enter the panel version (like 0.1.1):"
+    echo -n "Enter the panel version (like 0.1.1.1):"
     read -r tag_version
 
     if [ -z "$tag_version" ]; then
@@ -3212,7 +3212,7 @@ show_usage() {
 show_menu() {
     echo -e "
 ╔────────────────────────────────────────────────╗
-│  ${green}Samarka Panel Management Script (v0.1.1)${plain}     │
+│  ${green}Samarka Panel Management Script (v0.1.1.1)${plain}   │
 │  ${green}0.${plain} Exit Script                               │
 │────────────────────────────────────────────────│
 │  ${green}1.${plain} Install                                   │

@@ -17,17 +17,11 @@ import {
 } from 'antd';
 import {
   CrownOutlined,
-  CloudServerOutlined,
-  ApiOutlined,
-  LinkOutlined,
   CopyOutlined,
   CheckOutlined,
-  SafetyCertificateOutlined,
   RocketOutlined,
-  GlobalOutlined,
   BranchesOutlined,
   ThunderboltOutlined,
-  CodeOutlined,
 } from '@ant-design/icons';
 import { HttpUtil, RandomUtil } from '@/utils';
 import SuperMasterModal from '../nodes/SuperMasterModal';
@@ -152,8 +146,9 @@ export default function SamarkaSetupWizardModal({ open, onClose, onInboundsChang
       } else {
         message.error(res?.msg || 'Не удалось создать CDN подключение (возможно порт 443 уже занят)');
       }
-    } catch (e: any) {
-      message.error('Ошибка создания CDN: ' + (e?.message || 'Сетевая ошибка'));
+    } catch (e: unknown) {
+      const err = e as Error;
+      message.error('Ошибка создания CDN: ' + (err?.message || 'Сетевая ошибка'));
     } finally {
       setCreatingCdn(false);
     }
@@ -203,8 +198,9 @@ export default function SamarkaSetupWizardModal({ open, onClose, onInboundsChang
       } else {
         message.warning(`Сервер ответил с предупреждением: ${testRes?.msg || 'Проверьте доступность порта и токена'}`);
       }
-    } catch (e: any) {
-      message.error('Ошибка обработки ссылки: ' + (e?.message || 'Неверная ссылка'));
+    } catch (e: unknown) {
+      const err = e as Error;
+      message.error('Ошибка обработки ссылки: ' + (err?.message || 'Неверная ссылка'));
     } finally {
       setConnectingWorker(false);
     }
@@ -246,7 +242,7 @@ server {
         title={
           <Space>
             <RocketOutlined style={{ color: '#f59e0b', fontSize: 20 }} />
-            <span style={{ fontSize: 18, fontWeight: 700 }}>Мастер настройки Панели Самарка v0.1.1</span>
+            <span style={{ fontSize: 18, fontWeight: 700 }}>Мастер настройки Панели Самарка v0.1.1.1</span>
             <Tag color="gold">Веб-конфигуратор</Tag>
           </Space>
         }
