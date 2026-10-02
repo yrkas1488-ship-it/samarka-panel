@@ -1352,11 +1352,11 @@ install_x-ui() {
     local samarka_repo="${SAMARKA_REPO:-"yrkas1488-ship-it/samarka-panel"}"
 
     if [[ "$1" == "local" ]]; then
-        echo -e "${green}Установка Samarka v0.1.1.1 из локальных файлов...${plain}"
+        echo -e "${green}Установка Samarka v0.1.1.2 из локальных файлов...${plain}"
         mkdir -p "${xui_folder}"
         cp -rf "${cur_dir}"/* "${xui_folder}/"
         cd "${xui_folder}"
-        tag_version="0.1.1.1"
+        tag_version="0.1.1.2"
     else
         # Download resources
         if [ $# == 0 ]; then

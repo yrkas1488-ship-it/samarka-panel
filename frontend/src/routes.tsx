@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react';
-import { createBrowserRouter, type RouteObject } from 'react-router-dom';
+import { createBrowserRouter, useRouteError, type RouteObject } from 'react-router-dom';
+import { Button, Result } from 'antd';
 
 import PanelLayout from '@/layouts/PanelLayout';
 
@@ -17,10 +18,43 @@ function withSuspense(node: React.ReactNode) {
   return <Suspense fallback={null}>{node}</Suspense>;
 }
 
+function RouteErrorBoundary() {
+  const error = useRouteError() as { message?: string; statusText?: string } | null;
+  return (
+    <div style={{ display: 'flex', minHeight: '80vh', alignItems: 'center', justifyContent: 'center' }}>
+      <Result
+        status="warning"
+        title="Панель Самарка: Произошла ошибка интерфейса"
+        subTitle={error?.message || error?.statusText || 'Непредвиденная ошибка отображения'}
+        extra={[
+          <Button
+            key="refresh"
+            type="primary"
+            onClick={() => window.location.reload()}
+            style={{ background: '#f59e0b', borderColor: '#f59e0b', color: '#0f172a', fontWeight: 600 }}
+          >
+            Перезагрузить страницу
+          </Button>,
+          <Button
+            key="dashboard"
+            onClick={() => {
+              const base = (typeof window !== 'undefined' && window.X_UI_BASE_PATH) || '/';
+              window.location.href = `${base.replace(/\/+$/, '')}/panel/`;
+            }}
+          >
+            На главную
+          </Button>,
+        ]}
+      />
+    </div>
+  );
+}
+
 const routes: RouteObject[] = [
   {
     path: '/',
     element: <PanelLayout />,
+    errorElement: <RouteErrorBoundary />,
     children: [
       { index: true, element: withSuspense(<IndexPage />) },
       { path: 'inbounds', element: withSuspense(<InboundsPage />) },

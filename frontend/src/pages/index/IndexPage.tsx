@@ -86,7 +86,7 @@ function formatTrafficSpeed(bytesPerSec: number): string {
 export default function IndexPage() {
   const navigate = useNavigate();
   const { antdThemeConfig } = useTheme();
-  const { status, refresh: refreshStatus } = useStatusQuery();
+  const { status } = useStatusQuery();
   const [messageApi, messageContextHolder] = message.useMessage();
 
   useEffect(() => {
@@ -133,7 +133,11 @@ export default function IndexPage() {
   const fetchInboundsList = useCallback(async () => {
     setLoadingInbounds(true);
     try {
-      const res = await HttpUtil.get<Array<DbInboundLike & { id: number; remark?: string; enable?: boolean; port: number; protocol: string; up?: number; down?: number }>>('/panel/api/inbounds/list');
+      const res = await HttpUtil.get<Array<DbInboundLike & { id: number; remark?: string; enable?: boolean; port: number; protocol: string; up?: number; down?: number }>>(
+        '/panel/api/inbounds/list',
+        undefined,
+        { silent: true }
+      );
       if (res?.success && Array.isArray(res.obj)) {
         const parsed: ParsedInboundCard[] = res.obj.map((ib) => {
           const stream = (typeof ib.streamSettings === 'string' ? coerceInboundJsonField(ib.streamSettings) : (ib.streamSettings || {})) as InboundStreamSettingsLike;
@@ -213,14 +217,18 @@ export default function IndexPage() {
   }, [messageApi]);
 
   // Fetch Live Sniffer Logs
-  const fetchSnifferLogs = useCallback(async () => {
-    setLoadingLogs(true);
+  const fetchSnifferLogs = useCallback(async (isInitial = false) => {
+    if (isInitial) setLoadingLogs(true);
     try {
-      const msg = await HttpUtil.post<Array<{ DateTime?: string; Email?: string; FromAddress?: string; Inbound?: string; ToAddress?: string; Event?: number }>>('/panel/api/server/xraylogs/20', {
-        showDirect: true,
-        showBlocked: true,
-        showProxy: true,
-      });
+      const msg = await HttpUtil.post<Array<{ DateTime?: string; Email?: string; FromAddress?: string; Inbound?: string; ToAddress?: string; Event?: number }>>(
+        '/panel/api/server/xraylogs/20',
+        {
+          showDirect: true,
+          showBlocked: true,
+          showProxy: true,
+        },
+        { silent: true }
+      );
       if (msg?.success && Array.isArray(msg.obj) && msg.obj.length > 0) {
         const rows: SnifferRow[] = msg.obj.map((l) => {
           const d = l.DateTime ? new Date(l.DateTime) : new Date();
@@ -248,20 +256,25 @@ export default function IndexPage() {
     } catch {
       // ignore
     } finally {
-      setLoadingLogs(false);
+      if (isInitial) setLoadingLogs(false);
     }
   }, []);
 
-  // Polling on mount
+  // Stable references for polling to prevent infinite render loops
+  const fetchInboundsRef = useRef(fetchInboundsList);
+  fetchInboundsRef.current = fetchInboundsList;
+  const fetchLogsRef = useRef(fetchSnifferLogs);
+  fetchLogsRef.current = fetchSnifferLogs;
+
+  // Polling on mount without unstable deps
   useEffect(() => {
-    fetchInboundsList();
-    fetchSnifferLogs();
+    fetchInboundsRef.current();
+    fetchLogsRef.current(true);
     const interval = setInterval(() => {
-      fetchSnifferLogs();
-      refreshStatus();
-    }, 5000);
+      fetchLogsRef.current(false);
+    }, 6000);
     return () => clearInterval(interval);
-  }, [fetchInboundsList, fetchSnifferLogs, refreshStatus]);
+  }, []);
 
   // Quick 1-click Reality creation
   const handleCreateRealityInbound = async () => {
@@ -487,7 +500,7 @@ export default function IndexPage() {
               </div>
             </div>
 
-            {/* 2. TOP BANNER CARD - Samarka Panel v0.1.1.1 with Bilingual Description */}
+            {/* 2. TOP BANNER CARD - Samarka Panel v0.1.1.2 with Bilingual Description */}
             <div className="samarka-banner-card">
               <div className="samarka-banner-content">
                 <Space align="start" size={14} style={{ flex: 1, minWidth: 280 }}>
@@ -496,7 +509,7 @@ export default function IndexPage() {
                   </div>
                   <div>
                     <div className="samarka-banner-title">
-                      🦊 Панель Самарка v0.1.1.1 · Samarka Xray Panel
+                      🦊 Панель Самарка v0.1.1.2 · Samarka Xray Panel
                     </div>
                     <div className="samarka-banner-subtitle">
                       Роль узла / Node role: <span className="samarka-role-text">{roleLabel}</span> | Веб-порт / Web port: <b className="samarka-amber-bold">2053</b> | Протоколы / Protocols: <b className="samarka-amber-bold">Reality 8443</b> / CDN <b className="samarka-amber-bold">443</b>
@@ -699,7 +712,7 @@ export default function IndexPage() {
                     size="small"
                     type="text"
                     icon={<ReloadOutlined spin={loadingLogs} />}
-                    onClick={fetchSnifferLogs}
+                    onClick={() => { void fetchSnifferLogs(false); }}
                     className="samarka-refresh-btn"
                   >
                     Обновить / Refresh

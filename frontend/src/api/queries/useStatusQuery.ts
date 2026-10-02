@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { HttpUtil } from '@/utils';
 import { parseMsg } from '@/utils/zodValidate';
@@ -26,7 +26,10 @@ export function useStatusQuery() {
   });
 
   const status = useMemo(() => query.data ?? new Status(), [query.data]);
-  const refresh = async () => { await query.refetch(); };
+  const { refetch } = query;
+  const refresh = useCallback(async () => {
+    await refetch();
+  }, [refetch]);
 
   return {
     status,

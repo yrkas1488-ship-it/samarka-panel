@@ -51,21 +51,31 @@ export default function SamarkaSetupWizardModal({ open, onClose, onInboundsChang
 
   useEffect(() => {
     if (!open) return;
-    HttpUtil.get<{ id: number; token: string; name: string }[]>('/panel/api/setting/apiTokens').then(async (res) => {
-      if (res?.success && Array.isArray(res.obj) && res.obj.length > 0) {
-        const found = res.obj.find((t) => t.token) || res.obj[0];
-        if (found?.token) {
-          setClusterToken(found.token);
-          return;
+    const saved = localStorage.getItem('samarka_cluster_token');
+    if (saved) {
+      setClusterToken(saved);
+      return;
+    }
+
+    HttpUtil.get<{ id: number; token?: string; name: string }[]>('/panel/api/setting/apiTokens', undefined, { silent: true })
+      .then(async (res) => {
+        if (res?.success && Array.isArray(res.obj)) {
+          const existing = res.obj.find((t) => t.name === 'Samarka-Cluster');
+          if (existing) {
+            await HttpUtil.post(`/panel/api/setting/apiTokens/delete/${existing.id}`, undefined, { silent: true });
+          }
         }
-      }
-      const created = await HttpUtil.post<{ id: number; token: string }>('/panel/api/setting/apiTokens/create', {
-        name: 'Samarka-Cluster',
-      });
-      if (created?.success && created.obj?.token) {
-        setClusterToken(created.obj.token);
-      }
-    });
+        const created = await HttpUtil.post<{ id: number; token: string }>(
+          '/panel/api/setting/apiTokens/create',
+          { name: 'Samarka-Cluster' },
+          { silent: true }
+        );
+        if (created?.success && created.obj?.token) {
+          localStorage.setItem('samarka_cluster_token', created.obj.token);
+          setClusterToken(created.obj.token);
+        }
+      })
+      .catch(() => {});
   }, [open]);
 
   const copyToClipboard = (text: string, id: string) => {
@@ -242,7 +252,7 @@ server {
         title={
           <Space>
             <RocketOutlined style={{ color: '#f59e0b', fontSize: 20 }} />
-            <span style={{ fontSize: 18, fontWeight: 700 }}>Мастер настройки Панели Самарка v0.1.1.1</span>
+            <span style={{ fontSize: 18, fontWeight: 700 }}>Мастер настройки Панели Самарка v0.1.1.2</span>
             <Tag color="gold">Веб-конфигуратор</Tag>
           </Space>
         }
