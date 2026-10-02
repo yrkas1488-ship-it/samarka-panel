@@ -1,4 +1,4 @@
-import { lazy, useCallback, useEffect, useMemo, useState } from 'react';
+import { lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -98,6 +98,18 @@ export default function IndexPage() {
   const [creatingQuickInbound, setCreatingQuickInbound] = useState(false);
 
   const [searchQuery, setSearchQuery] = useState('');
+  const searchInputRef = useRef<any>(null);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
   const [snifferRows, setSnifferRows] = useState<SnifferRow[]>([]);
   const [loadingLogs, setLoadingLogs] = useState(false);
 
@@ -426,14 +438,16 @@ export default function IndexPage() {
             {/* 1. TOP HEADER BAR matching the mockup */}
             <div className="samarka-header-bar">
               <div className="samarka-host-badge">
-                <span className="samarka-host-label">HOST:</span>
+                <span className="samarka-host-label">HOST / УЗЕЛ:</span>
                 <span className="samarka-host-val">{hostName}</span>
+                <span className="live-pulsing-dot" style={{ marginLeft: 8 }} />
               </div>
 
               <div className="samarka-search-box">
                 <Input
+                  ref={searchInputRef}
                   prefix={<SearchOutlined style={{ color: 'rgba(255,255,255,0.45)' }} />}
-                  placeholder="[Search: Cmd+K]"
+                  placeholder="[Поиск / Search: Cmd+K]"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   allowClear
@@ -442,33 +456,56 @@ export default function IndexPage() {
               </div>
 
               <div className="samarka-header-metrics">
-                <span className="samarka-speed-down">
-                  ↓ {formatTrafficSpeed(status?.netIO?.down ?? 0)}
+                <div className="samarka-speed-badge" title="Входящая скорость / Download throughput">
+                  <span className="samarka-speed-down">
+                    ↓ {formatTrafficSpeed(status?.netIO?.down ?? 0)}
+                  </span>
+                  <span className="samarka-metric-sub">Down</span>
+                </div>
+                <div className="samarka-speed-badge" title="Исходящая скорость / Upload throughput">
+                  <span className="samarka-speed-up">
+                    ↑ {formatTrafficSpeed(status?.netIO?.up ?? 0)}
+                  </span>
+                  <span className="samarka-metric-sub">Up</span>
+                </div>
+                <span className="samarka-metric-item" title="Оперативная память / Memory usage">
+                  RAM / ОЗУ: <b>{memUsedMb}MB</b>
                 </span>
-                <span className="samarka-speed-up">
-                  ↑ {formatTrafficSpeed(status?.netIO?.up ?? 0)}
+                <span className="samarka-metric-item" title="Нагрузка процессора / CPU load">
+                  CPU / ЦПУ: <b>{cpuPct}%</b>
                 </span>
-                <span className="samarka-metric-item">RAM {memUsedMb}MB</span>
-                <span className="samarka-metric-item">CPU {cpuPct}%</span>
               </div>
             </div>
 
-            {/* 2. TOP BANNER CARD preserved from 0.0.2 with matching slate theme */}
+            {/* 2. TOP BANNER CARD - Samarka Panel v0.1.0 with Bilingual Description */}
             <div className="samarka-banner-card">
               <div className="samarka-banner-content">
-                <Space align="center" size={12}>
+                <Space align="start" size={14} style={{ flex: 1, minWidth: 280 }}>
                   <div className="samarka-banner-icon">
-                    <RocketOutlined style={{ fontSize: 24, color: '#f59e0b' }} />
+                    <RocketOutlined style={{ fontSize: 28, color: '#f59e0b' }} />
                   </div>
                   <div>
-                    <div className="samarka-banner-title">Конфигурация Samarka v0.0.3</div>
+                    <div className="samarka-banner-title">
+                      🦊 Панель Самарка v0.1.0 · Samarka Xray Panel
+                    </div>
                     <div className="samarka-banner-subtitle">
-                      Роль: <span className="samarka-role-text">{roleLabel}</span> | Порт веб-панели: <b className="samarka-amber-bold">2053</b> | Протоколы: <b className="samarka-amber-bold">8443</b> / CDN <b className="samarka-amber-bold">443</b>
+                      Роль узла / Node role: <span className="samarka-role-text">{roleLabel}</span> | Веб-порт / Web port: <b className="samarka-amber-bold">2053</b> | Протоколы / Protocols: <b className="samarka-amber-bold">Reality 8443</b> / CDN <b className="samarka-amber-bold">443</b>
+                    </div>
+
+                    <div className="samarka-banner-bilingual-desc">
+                      <div className="bilingual-line-ru">
+                        <span className="bilingual-flag">🇷🇺</span>
+                        <span><b>Панель Самарка:</b> Управление туннелями Xray, обход белых списков РФ через российские CDN (443 XHTTP), шаблоны Reality (8443) и пульт Глав-Главного сервера.</span>
+                      </div>
+                      <div className="bilingual-line-en">
+                        <span className="bilingual-flag">🇬🇧</span>
+                        <span><b>Samarka Panel:</b> Next-generation Xray-core control panel featuring Russian CDN bypass (443 XHTTP), 1-click Reality presets (8443), and multi-node cluster orchestration.</span>
+                      </div>
                     </div>
                   </div>
                 </Space>
 
-                <Space wrap>
+                <Space wrap className="samarka-banner-actions">
                   {isSuperMaster && (
                     <Button
                       type="default"
@@ -476,7 +513,7 @@ export default function IndexPage() {
                       onClick={() => setSuperMasterOpen(true)}
                       className="samarka-supermaster-btn"
                     >
-                      👑 Пульт Глав-Главного
+                      👑 Пульт Глав-Главного / Super-Master
                     </Button>
                   )}
                   <Button
@@ -485,23 +522,28 @@ export default function IndexPage() {
                     onClick={() => setSamarkaSetupOpen(true)}
                     className="samarka-config-btn"
                   >
-                    Мастер настройки ролей и CDN
+                    ⚡ Мастер настройки ролей и CDN / Setup Wizard
                   </Button>
                 </Space>
               </div>
             </div>
 
-            {/* 3. ACTIVE INBOUNDS SECTION matching the mockup */}
+            {/* 3. ACTIVE INBOUNDS SECTION */}
             <div className="samarka-section">
               <div className="samarka-section-header">
-                <h2 className="samarka-section-title">Active Inbounds</h2>
+                <div>
+                  <h2 className="samarka-section-title">Active Inbounds · Активные подключения</h2>
+                  <div className="samarka-section-desc">
+                    Прямые Reality и CDN туннели для быстрого обхода блокировок · Direct Reality & CDN tunnels for high-speed connection
+                  </div>
+                </div>
                 <Button
                   type="link"
                   size="small"
                   onClick={() => navigate('/inbounds')}
                   className="samarka-manage-link"
                 >
-                  Все входящие ↗
+                  Все входящие / All Inbounds ↗
                 </Button>
               </div>
 
@@ -510,7 +552,16 @@ export default function IndexPage() {
                   <Col xs={24} lg={12} key={ib.id}>
                     <div className={`samarka-inbound-card ${!ib.enable ? 'is-disabled' : ''}`}>
                       <div className="samarka-card-top">
-                        <div className="samarka-inbound-title">{ib.remark}</div>
+                        <div className="samarka-inbound-title-row">
+                          <span className="samarka-inbound-title">{ib.remark}</span>
+                          <span className="samarka-proto-chip">
+                            {ib.protocol === 'vless' && ib.network === 'xhttp'
+                              ? 'CDN XHTTP'
+                              : ib.protocol === 'vless'
+                              ? 'Reality TCP'
+                              : ib.protocol?.toUpperCase()}
+                          </span>
+                        </div>
                         <div className="samarka-card-actions">
                           <Button
                             size="small"
@@ -518,47 +569,64 @@ export default function IndexPage() {
                             icon={<QrcodeOutlined />}
                             onClick={() => handleOpenQr(ib)}
                           >
-                            Get QR/Link
+                            QR & Ссылка / Link
                           </Button>
                         </div>
                       </div>
 
-                      <div className="samarka-inbound-port">:{ib.port}</div>
+                      <div className="samarka-inbound-port">
+                        <span className="port-number">:{ib.port}</span>
+                        <span className="port-badge">PORT / ПОРТ</span>
+                      </div>
 
                       <div className="samarka-inbound-details">
                         {ib.sni ? (
                           <div className="detail-line">
-                            <span className="detail-label">sni:</span> {ib.sni}
+                            <span className="detail-label">Домен / SNI:</span>
+                            <span className="detail-val mono">{ib.sni}</span>
                           </div>
                         ) : null}
                         {ib.shortId ? (
                           <div className="detail-line">
-                            <span className="detail-label">ShortId:</span> {ib.shortId}
+                            <span className="detail-label">Ключ / ShortId:</span>
+                            <span className="detail-val mono">{ib.shortId}</span>
                           </div>
                         ) : null}
                         {ib.cipher ? (
                           <div className="detail-line">
-                            <span className="detail-label">Cipher:</span> {ib.cipher}
+                            <span className="detail-label">Шифр / Cipher:</span>
+                            <span className="detail-val mono">{ib.cipher}</span>
                           </div>
                         ) : null}
                         <div className="detail-line">
-                          <span className="detail-label">Users:</span> {ib.userCount}
+                          <span className="detail-label">Клиенты / Users:</span>
+                          <span className="detail-val">{ib.userCount}</span>
                         </div>
                         {ib.dataCounter ? (
                           <div className="detail-line">
-                            <span className="detail-label">Data counter:</span> {ib.dataCounter}
+                            <span className="detail-label">Трафик / Data counter:</span>
+                            <span className="detail-val">{ib.dataCounter}</span>
                           </div>
                         ) : null}
                       </div>
 
                       <div className="samarka-card-bottom">
-                        <span className="samarka-active-label">Active</span>
-                        <Switch
-                          checked={ib.enable}
-                          loading={togglingInboundId === ib.id}
-                          onChange={(checked) => handleToggleInbound(ib.id, checked)}
-                          className="samarka-switch"
-                        />
+                        <span className="samarka-sub-badge">
+                          {ib.protocol === 'vless' && ib.network === 'xhttp'
+                            ? 'Обход РКН через CDN (Порт 443)'
+                            : ib.protocol === 'vless'
+                            ? 'Прямой Reality TCP туннель'
+                            : 'Активный туннель Xray'}
+                        </span>
+                        <div className="samarka-switch-group">
+                          <span className="samarka-active-label">Активен / Active</span>
+                          <Switch
+                            checked={ib.enable}
+                            loading={togglingInboundId === ib.id}
+                            onChange={(checked) => handleToggleInbound(ib.id, checked)}
+                            className="samarka-switch"
+                          />
+                        </div>
                       </div>
                     </div>
                   </Col>
@@ -567,11 +635,15 @@ export default function IndexPage() {
                 {filteredInbounds.length === 0 && !loadingInbounds && (
                   <Col span={24}>
                     <div className="samarka-empty-inbounds-card">
-                      <div className="samarka-empty-title">Активных входящих подключений не найдено</div>
+                      <div className="samarka-empty-title">
+                        Активных входящих подключений не найдено · No Active Inbounds Found
+                      </div>
                       <div className="samarka-empty-desc">
                         Создайте оптимизированные подключения VLESS Reality (8443) или Yandex CDN (443) в один клик:
+                        <br />
+                        <span style={{ opacity: 0.8 }}>Deploy optimized VLESS Reality (8443) or CDN bypass (443) inbounds in 1 click:</span>
                       </div>
-                      <Space wrap style={{ marginTop: 14 }}>
+                      <Space wrap style={{ marginTop: 16 }}>
                         <Button
                           type="primary"
                           icon={<ThunderboltOutlined />}
@@ -579,7 +651,7 @@ export default function IndexPage() {
                           onClick={handleCreateRealityInbound}
                           className="samarka-quick-reality-btn"
                         >
-                          + Создать VLESS Reality (8443)
+                          + Создать VLESS Reality (8443) / Create Reality
                         </Button>
                         <Button
                           type="primary"
@@ -589,7 +661,7 @@ export default function IndexPage() {
                           onClick={handleCreateCdnInbound}
                           className="samarka-quick-cdn-btn"
                         >
-                          + Создать CDN Inbound (443)
+                          + Создать CDN Inbound (443) / Create CDN
                         </Button>
                       </Space>
                     </div>
@@ -598,15 +670,20 @@ export default function IndexPage() {
               </Row>
             </div>
 
-            {/* 4. LIVE SNIFFER SECTION matching the mockup */}
+            {/* 4. LIVE SNIFFER SECTION */}
             <div className="samarka-section">
               <div className="samarka-section-header">
-                <Space align="center" size={10}>
-                  <h2 className="samarka-section-title">Live Sniffer</h2>
-                  <Tag className="samarka-live-tag">
-                    <span className="live-pulsing-dot" /> LIVE
-                  </Tag>
-                </Space>
+                <div>
+                  <Space align="center" size={10}>
+                    <h2 className="samarka-section-title">Live Sniffer · Мониторинг соединений в реальном времени</h2>
+                    <Tag className="samarka-live-tag">
+                      <span className="live-pulsing-dot" /> LIVE · В ЭФИРЕ
+                    </Tag>
+                  </Space>
+                  <div className="samarka-section-desc">
+                    Живое отслеживание сетевых сессий клиентов через анализатор трафика Xray · Real-time live client network sessions stream
+                  </div>
+                </div>
                 <Space>
                   <Button
                     size="small"
@@ -615,7 +692,7 @@ export default function IndexPage() {
                     onClick={fetchSnifferLogs}
                     className="samarka-refresh-btn"
                   >
-                    Обновить
+                    Обновить / Refresh
                   </Button>
                   <Button
                     size="small"
@@ -623,7 +700,7 @@ export default function IndexPage() {
                     onClick={() => setXrayLogsOpen(true)}
                     className="samarka-full-logs-btn"
                   >
-                    Все логи Xray ↗
+                    Все логи Xray / Full Logs ↗
                   </Button>
                 </Space>
               </div>
@@ -632,11 +709,11 @@ export default function IndexPage() {
                 <table className="samarka-sniffer-table">
                   <thead>
                     <tr>
-                      <th style={{ width: '15%' }}>Time</th>
-                      <th style={{ width: '22%' }}>Client</th>
-                      <th style={{ width: '20%' }}>Protocol</th>
-                      <th style={{ width: '28%' }}>Target Domain (SNI)</th>
-                      <th style={{ width: '15%' }}>Status</th>
+                      <th style={{ width: '15%' }}>Время / Time</th>
+                      <th style={{ width: '22%' }}>Клиент / Client</th>
+                      <th style={{ width: '18%' }}>Протокол / Protocol</th>
+                      <th style={{ width: '27%' }}>Целевой хост / Target (SNI)</th>
+                      <th style={{ width: '18%' }}>Статус / Status</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -644,20 +721,22 @@ export default function IndexPage() {
                       <tr key={idx}>
                         <td className="col-time">{row.time}</td>
                         <td className="col-client">{row.client}</td>
-                        <td className="col-proto">{row.protocol}</td>
+                        <td className="col-proto">
+                          <span className="col-proto-badge">{row.protocol}</span>
+                        </td>
                         <td className="col-domain">{row.targetDomain}</td>
                         <td className="col-status">
                           {row.status === 'Direct' ? (
                             <span className="status-direct">
-                              Direct <span className="status-dot green" />
+                              Direct 🟢 Прямой
                             </span>
                           ) : row.status === 'Blocked' ? (
                             <span className="status-blocked">
-                              Blocked <span className="status-dot red" />
+                              Blocked 🔴 Заблокирован
                             </span>
                           ) : (
                             <span className="status-proxy">
-                              Proxy <span className="status-dot blue" />
+                              Proxy 🔵 Прокси
                             </span>
                           )}
                         </td>
@@ -666,10 +745,10 @@ export default function IndexPage() {
                     {filteredSniffer.length === 0 && (
                       <tr>
                         <td colSpan={5} className="sniffer-empty-cell">
-                          <Space direction="vertical" align="center" style={{ padding: '24px 0' }}>
+                          <Space direction="vertical" align="center" style={{ padding: '28px 0' }}>
                             <span className="live-pulsing-dot big" />
-                            <span style={{ color: 'rgba(255,255,255,0.45)', fontSize: 13 }}>
-                              Ожидание активного трафика через Xray Sniffer...
+                            <span style={{ color: 'rgba(255,255,255,0.65)', fontSize: 13, fontWeight: 500 }}>
+                              Ожидание активного трафика через Xray Sniffer... / Waiting for active Xray traffic...
                             </span>
                           </Space>
                         </td>

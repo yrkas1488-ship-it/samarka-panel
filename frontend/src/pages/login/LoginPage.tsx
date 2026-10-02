@@ -174,8 +174,8 @@ export default function LoginPage() {
             ) : (
               <div className="login-card">
                 <div className="brand" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
-                  <img src={logoImg} alt="Samarka" style={{ width: 48, height: 48, borderRadius: 12, objectFit: 'cover' }} />
-                  <span className="brand-name">Samarka</span>
+                  <img src={logoImg} alt="Панель Самарка" style={{ width: 48, height: 48, borderRadius: 12, objectFit: 'cover' }} />
+                  <span className="brand-name">Панель Самарка</span>
                   <span className="brand-accent" aria-hidden="true" />
                 </div>
                 <h2 className="welcome">
