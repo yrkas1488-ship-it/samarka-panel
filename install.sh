@@ -1212,7 +1212,7 @@ EOF
             echo -e "${green}API Token:   ${config_apiToken}${plain}"
             echo -e "${green}═══════════════════════════════════════════${plain}"
             echo -e "${yellow}⚠ Войдите в панель по ссылке выше — при первом входе откроется мастер настройки ролей и CDN!${plain}"
-            echo -e "${yellow}Управление: команда 'samarka' или 'x-ui'${plain}"
+            echo -e "${yellow}Управление: команда 'samarka'${plain}"
             if [[ "$SSL_SCHEME" == "https" ]]; then
                 echo -e "${yellow}⚠ SSL Certificate: Enabled and configured${plain}"
             else
@@ -1332,16 +1332,16 @@ setup_fail2ban() {
         return 0
     fi
 
-    if [[ ! -x /usr/bin/x-ui ]]; then
-        echo -e "${yellow}x-ui CLI not found; skipping Fail2ban auto-setup.${plain}"
+    if [[ ! -x /usr/bin/samarka ]]; then
+        echo -e "${yellow}samarka CLI not found; skipping Fail2ban auto-setup.${plain}"
         return 0
     fi
 
     echo -e "${green}Setting up Fail2ban for the IP Limit feature...${plain}"
-    if /usr/bin/x-ui setup-fail2ban; then
+    if /usr/bin/samarka setup-fail2ban; then
         echo -e "${green}Fail2ban setup complete.${plain}"
     else
-        echo -e "${yellow}Fail2ban setup did not finish; IP Limit stays disabled until you run 'x-ui' and open the IP Limit menu. Continuing.${plain}"
+        echo -e "${yellow}Fail2ban setup did not finish; IP Limit stays disabled until you run 'samarka' and open the IP Limit menu. Continuing.${plain}"
     fi
     return 0
 }
@@ -1352,11 +1352,11 @@ install_x-ui() {
     local samarka_repo="${SAMARKA_REPO:-"yrkas1488-ship-it/samarka-panel"}"
 
     if [[ "$1" == "local" ]]; then
-        echo -e "${green}Установка Samarka v0.0.1 из локальных файлов...${plain}"
+        echo -e "${green}Установка Samarka v0.1.1 из локальных файлов...${plain}"
         mkdir -p "${xui_folder}"
         cp -rf "${cur_dir}"/* "${xui_folder}/"
         cd "${xui_folder}"
-        tag_version="0.0.1"
+        tag_version="0.1.1"
     else
         # Download resources
         if [ $# == 0 ]; then
@@ -1440,16 +1440,16 @@ install_x-ui() {
         chmod +x bin/mtg-linux-$(arch)
     fi
 
-    # Update x-ui cli and set permission
+    # Update samarka cli and set permission
     if [[ -f /usr/bin/x-ui-temp ]]; then
-        mv -f /usr/bin/x-ui-temp /usr/bin/x-ui
+        mv -f /usr/bin/x-ui-temp /usr/bin/samarka
     elif [[ -f "${xui_folder}/samarka.sh" ]]; then
-        cp -f "${xui_folder}/samarka.sh" /usr/bin/x-ui
+        cp -f "${xui_folder}/samarka.sh" /usr/bin/samarka
     elif [[ -f "${xui_folder}/x-ui.sh" ]]; then
-        cp -f "${xui_folder}/x-ui.sh" /usr/bin/x-ui
+        cp -f "${xui_folder}/x-ui.sh" /usr/bin/samarka
     fi
-    chmod +x /usr/bin/x-ui
-    ln -sf /usr/bin/x-ui /usr/bin/samarka
+    chmod +x /usr/bin/samarka
+    rm -f /usr/bin/x-ui
     mkdir -p /var/log/x-ui
     config_after_install
 
@@ -1559,7 +1559,7 @@ install_x-ui() {
     # works out of the box (no-op when XUI_ENABLE_FAIL2BAN=false). Never fatal.
     setup_fail2ban
 
-    echo -e "${green}Samarka (x-ui) ${tag_version}${plain} installation finished, it is running now..."
+    echo -e "${green}Samarka Panel ${tag_version}${plain} installation finished, it is running now..."
     echo -e ""
     echo -e "┌───────────────────────────────────────────────────────┐
 │  ${blue}Samarka control menu usages (subcommands):${plain}           │
@@ -1572,7 +1572,7 @@ install_x-ui() {
 │  ${blue}samarka settings${plain}  - Текущие настройки (порт, путь)   │
 │  ${blue}samarka log${plain}       - Просмотр логов                   │
 │  ${blue}samarka update${plain}    - Обновление                       │
-│  ${blue}x-ui${plain}              - Дополнительный алиас команды     │
+│  ${blue}samarka uninstall${plain} - Удаление панели                  │
 └───────────────────────────────────────────────────────┘"
 }
 

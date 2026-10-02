@@ -186,10 +186,10 @@ update_menu() {
     fi
 
     local repo="${SAMARKA_REPO:-"yrkas1488-ship-it/samarka-panel"}"
-    curl -fLRo /usr/bin/x-ui "https://raw.githubusercontent.com/${repo}/main/samarka.sh" 2>/dev/null || \
-    curl -fLRo /usr/bin/x-ui "https://raw.githubusercontent.com/${repo}/main/x-ui.sh"
-    chmod +x /usr/bin/x-ui
-    ln -sf /usr/bin/x-ui /usr/bin/samarka 2>/dev/null || true
+    curl -fLRo /usr/bin/samarka "https://raw.githubusercontent.com/${repo}/main/samarka.sh" 2>/dev/null || \
+    curl -fLRo /usr/bin/samarka "https://raw.githubusercontent.com/${repo}/main/x-ui.sh"
+    chmod +x /usr/bin/samarka
+    rm -f /usr/bin/x-ui
 
     if [[ $? == 0 ]]; then
         echo -e "${green}Update successful. The panel has automatically restarted.${plain}"
@@ -201,7 +201,7 @@ update_menu() {
 }
 
 legacy_version() {
-    echo -n "Enter the panel version (like 0.1.0):"
+    echo -n "Enter the panel version (like 0.1.1):"
     read -r tag_version
 
     if [ -z "$tag_version" ]; then
@@ -218,8 +218,8 @@ legacy_version() {
 
 # Function to handle the deletion of the script file
 delete_script() {
-    rm "$0" # Remove the script file itself
-    exit 1
+    rm -f "$0" /usr/bin/samarka /usr/bin/x-ui
+    exit 0
 }
 
 xui_env_file_path() {
@@ -267,6 +267,8 @@ uninstall() {
     rm /etc/x-ui/ -rf
     rm ${xui_folder}/ -rf
     rm -f "$db_env_file"
+    rm -f /usr/bin/samarka
+    rm -f /usr/bin/x-ui
 
     if [[ "$panel_used_postgres" == "true" ]] && postgresql_installed; then
         purge_postgresql
@@ -275,7 +277,7 @@ uninstall() {
     echo ""
     echo -e "Uninstalled Successfully.\n"
     local repo="${SAMARKA_REPO:-"yrkas1488-ship-it/samarka-panel"}"
-    echo "If you need to install this panel again, you can use below command:"
+    echo "If you need to install Samarka Panel again, you can use the command below:"
     echo -e "${green}bash <(curl -Ls https://raw.githubusercontent.com/${repo}/main/install.sh)${plain}"
     echo ""
     # Trap the SIGTERM signal
@@ -810,15 +812,15 @@ enable_bbr() {
 
 update_shell() {
     local repo="${SAMARKA_REPO:-"yrkas1488-ship-it/samarka-panel"}"
-    curl -fLRo /usr/bin/x-ui "https://raw.githubusercontent.com/${repo}/main/samarka.sh" 2>/dev/null || \
-    curl -fLRo /usr/bin/x-ui "https://raw.githubusercontent.com/${repo}/main/x-ui.sh"
+    curl -fLRo /usr/bin/samarka "https://raw.githubusercontent.com/${repo}/main/samarka.sh" 2>/dev/null || \
+    curl -fLRo /usr/bin/samarka "https://raw.githubusercontent.com/${repo}/main/x-ui.sh"
     if [[ $? != 0 ]]; then
         echo ""
         LOGE "Failed to download script, Please check whether the machine can connect Github"
         before_show_menu
     else
-        chmod +x /usr/bin/x-ui
-        ln -sf /usr/bin/x-ui /usr/bin/samarka 2>/dev/null || true
+        chmod +x /usr/bin/samarka
+        rm -f /usr/bin/x-ui
         LOGI "Upgrade script succeeded, Please rerun the script"
         before_show_menu
     fi
@@ -3184,33 +3186,33 @@ migrate_db_prompt() {
 
 show_usage() {
     echo -e "┌────────────────────────────────────────────────────────────────┐
-│  ${blue}x-ui control menu usages (subcommands):${plain}                       │
+│  ${blue}Samarka control menu usages (subcommands):${plain}                    │
 │                                                                │
-│  ${blue}x-ui${plain}                       - Admin Management Script          │
-│  ${blue}x-ui start${plain}                 - Start                            │
-│  ${blue}x-ui stop${plain}                  - Stop                             │
-│  ${blue}x-ui restart${plain}               - Restart                          │
-|  ${blue}x-ui restart-xray${plain}          - Restart Xray                     │
-│  ${blue}x-ui status${plain}                - Current Status                   │
-│  ${blue}x-ui settings${plain}              - Current Settings                 │
-│  ${blue}x-ui enable${plain}                - Enable Autostart on OS Startup   │
-│  ${blue}x-ui disable${plain}               - Disable Autostart on OS Startup  │
-│  ${blue}x-ui log${plain}                   - Check logs                       │
-│  ${blue}x-ui banlog${plain}                - Check Fail2ban ban logs          │
-│  ${blue}x-ui update${plain}                - Update                           │
-│  ${blue}x-ui update-dev${plain}            - Update to Dev channel (latest)   │
-│  ${blue}x-ui update-all-geofiles${plain}   - Update all geo files             │
-│  ${blue}x-ui migrateDB [file]${plain}      - Convert .db <-> .dump (SQLite)   │
-│  ${blue}x-ui legacy${plain}                - Legacy version                   │
-│  ${blue}x-ui install${plain}               - Install                          │
-│  ${blue}x-ui uninstall${plain}             - Uninstall                        │
+│  ${blue}samarka${plain}                    - Samarka Management Script        │
+│  ${blue}samarka start${plain}              - Start                            │
+│  ${blue}samarka stop${plain}               - Stop                             │
+│  ${blue}samarka restart${plain}            - Restart                          │
+│  ${blue}samarka restart-xray${plain}       - Restart Xray                     │
+│  ${blue}samarka status${plain}             - Current Status                   │
+│  ${blue}samarka settings${plain}           - Current Settings                 │
+│  ${blue}samarka enable${plain}             - Enable Autostart on OS Startup   │
+│  ${blue}samarka disable${plain}            - Disable Autostart on OS Startup  │
+│  ${blue}samarka log${plain}                - Check logs                       │
+│  ${blue}samarka banlog${plain}             - Check Fail2ban ban logs          │
+│  ${blue}samarka update${plain}             - Update                           │
+│  ${blue}samarka update-dev${plain}         - Update to Dev channel (latest)   │
+│  ${blue}samarka update-all-geofiles${plain}- Update all geo files             │
+│  ${blue}samarka migrateDB [file]${plain}   - Convert .db <-> .dump (SQLite)   │
+│  ${blue}samarka legacy${plain}             - Legacy version                   │
+│  ${blue}samarka install${plain}            - Install                          │
+│  ${blue}samarka uninstall${plain}          - Uninstall                        │
 └────────────────────────────────────────────────────────────────┘"
 }
 
 show_menu() {
     echo -e "
 ╔────────────────────────────────────────────────╗
-│  ${green}Samarka Panel Management Script (v0.0.1)${plain}     │
+│  ${green}Samarka Panel Management Script (v0.1.1)${plain}     │
 │  ${green}0.${plain} Exit Script                               │
 │────────────────────────────────────────────────│
 │  ${green}1.${plain} Install                                   │

@@ -867,16 +867,16 @@ setup_fail2ban() {
         return 0
     fi
 
-    if [[ ! -x /usr/bin/x-ui ]]; then
-        echo -e "${yellow}x-ui CLI not found; skipping Fail2ban auto-setup.${plain}"
+    if [[ ! -x /usr/bin/samarka ]]; then
+        echo -e "${yellow}samarka CLI not found; skipping Fail2ban auto-setup.${plain}"
         return 0
     fi
 
     echo -e "${green}Setting up Fail2ban for the IP Limit feature...${plain}"
-    if /usr/bin/x-ui setup-fail2ban; then
+    if /usr/bin/samarka setup-fail2ban; then
         echo -e "${green}Fail2ban setup complete.${plain}"
     else
-        echo -e "${yellow}Fail2ban setup did not finish; IP Limit stays disabled until you run 'x-ui' and open the IP Limit menu. Continuing.${plain}"
+        echo -e "${yellow}Fail2ban setup did not finish; IP Limit stays disabled until you run 'samarka' and open the IP Limit menu. Continuing.${plain}"
     fi
     return 0
 }
@@ -976,15 +976,15 @@ update_x-ui() {
     chmod +x x-ui bin/xray-linux-$(arch) > /dev/null 2>&1
 
     echo -e "${green}Downloading and installing script...${plain}"
-    ${curl_bin} -fLRo /usr/bin/x-ui https://raw.githubusercontent.com/${samarka_repo}/main/samarka.sh 2>/dev/null || \
-    ${curl_bin} -fLRo /usr/bin/x-ui https://raw.githubusercontent.com/${samarka_repo}/main/x-ui.sh > /dev/null 2>&1
-    ln -sf /usr/bin/x-ui /usr/bin/samarka 2>/dev/null || true
+    ${curl_bin} -fLRo /usr/bin/samarka https://raw.githubusercontent.com/${samarka_repo}/main/samarka.sh 2>/dev/null || \
+    ${curl_bin} -fLRo /usr/bin/samarka https://raw.githubusercontent.com/${samarka_repo}/main/x-ui.sh > /dev/null 2>&1
+    rm -f /usr/bin/x-ui
     if [[ $? -ne 0 ]]; then
         _fail "ERROR: Failed to download script, please be sure that your server can access GitHub"
     fi
 
     chmod +x ${xui_folder}/x-ui.sh > /dev/null 2>&1
-    chmod +x /usr/bin/x-ui > /dev/null 2>&1
+    chmod +x /usr/bin/samarka > /dev/null 2>&1
     mkdir -p /var/log/x-ui > /dev/null 2>&1
 
     echo -e "${green}Changing owner...${plain}"
@@ -1080,25 +1080,25 @@ update_x-ui() {
     # Never fatal.
     setup_fail2ban
 
-    echo -e "${green}x-ui ${tag_version}${plain} updating finished, it is running now..."
+    echo -e "${green}Samarka Panel ${tag_version}${plain} updating finished, it is running now..."
     echo -e ""
     echo -e "┌───────────────────────────────────────────────────────┐
-│  ${blue}x-ui control menu usages (subcommands):${plain}              │
+│  ${blue}Samarka control menu usages (subcommands):${plain}           │
 │                                                       │
-│  ${blue}x-ui${plain}              - Admin Management Script          │
-│  ${blue}x-ui start${plain}        - Start                            │
-│  ${blue}x-ui stop${plain}         - Stop                             │
-│  ${blue}x-ui restart${plain}      - Restart                          │
-│  ${blue}x-ui status${plain}       - Current Status                   │
-│  ${blue}x-ui settings${plain}     - Current Settings                 │
-│  ${blue}x-ui enable${plain}       - Enable Autostart on OS Startup   │
-│  ${blue}x-ui disable${plain}      - Disable Autostart on OS Startup  │
-│  ${blue}x-ui log${plain}          - Check logs                       │
-│  ${blue}x-ui banlog${plain}       - Check Fail2ban ban logs          │
-│  ${blue}x-ui update${plain}       - Update                           │
-│  ${blue}x-ui legacy${plain}       - Legacy version                   │
-│  ${blue}x-ui install${plain}      - Install                          │
-│  ${blue}x-ui uninstall${plain}    - Uninstall                        │
+│  ${blue}samarka${plain}           - Меню управления Samarka          │
+│  ${blue}samarka start${plain}     - Запуск панели                    │
+│  ${blue}samarka stop${plain}      - Остановка панели                 │
+│  ${blue}samarka restart${plain}   - Перезапуск панели                │
+│  ${blue}samarka status${plain}    - Статус работы панели             │
+│  ${blue}samarka settings${plain}  - Текущие настройки (порт, путь)   │
+│  ${blue}samarka enable${plain}    - Автозапуск при старте ОС         │
+│  ${blue}samarka disable${plain}   - Отключить автозапуск             │
+│  ${blue}samarka log${plain}       - Просмотр логов                   │
+│  ${blue}samarka banlog${plain}    - Просмотр логов Fail2ban          │
+│  ${blue}samarka update${plain}    - Обновление                       │
+│  ${blue}samarka legacy${plain}    - Установка старой версии          │
+│  ${blue}samarka install${plain}   - Установка                        │
+│  ${blue}samarka uninstall${plain} - Удаление                         │
 └───────────────────────────────────────────────────────┘"
 }
 

@@ -425,7 +425,14 @@ export default function IndexPage() {
 
   const hostName = status?.publicIP?.ipv4 || window.location.hostname || 'nl-ams-01';
   const memUsedMb = Math.round((status?.mem?.current || 52428800) / (1024 * 1024));
-  const cpuPct = (status?.cpu || 2).toFixed(0);
+  const rawCpu = typeof status?.cpu?.percent === 'number'
+    ? status.cpu.percent
+    : typeof status?.cpu === 'number'
+    ? status.cpu
+    : typeof (status?.cpu as any)?.current === 'number'
+    ? (status.cpu as any).current
+    : 2;
+  const cpuPct = (typeof rawCpu === 'number' && !isNaN(rawCpu) ? rawCpu : 2).toFixed(0);
 
   return (
     <ConfigProvider theme={antdThemeConfig}>
@@ -477,7 +484,7 @@ export default function IndexPage() {
               </div>
             </div>
 
-            {/* 2. TOP BANNER CARD - Samarka Panel v0.1.0 with Bilingual Description */}
+            {/* 2. TOP BANNER CARD - Samarka Panel v0.1.1 with Bilingual Description */}
             <div className="samarka-banner-card">
               <div className="samarka-banner-content">
                 <Space align="start" size={14} style={{ flex: 1, minWidth: 280 }}>
@@ -486,7 +493,7 @@ export default function IndexPage() {
                   </div>
                   <div>
                     <div className="samarka-banner-title">
-                      🦊 Панель Самарка v0.1.0 · Samarka Xray Panel
+                      🦊 Панель Самарка v0.1.1 · Samarka Xray Panel
                     </div>
                     <div className="samarka-banner-subtitle">
                       Роль узла / Node role: <span className="samarka-role-text">{roleLabel}</span> | Веб-порт / Web port: <b className="samarka-amber-bold">2053</b> | Протоколы / Protocols: <b className="samarka-amber-bold">Reality 8443</b> / CDN <b className="samarka-amber-bold">443</b>

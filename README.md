@@ -1,4 +1,4 @@
-# 🦊 Панель Самарка v0.1.0 · Samarka Panel v0.1.0
+# 🦊 Панель Самарка v0.1.1 · Samarka Panel v0.1.1
 
 <p align="center">
   <img alt="Samarka Logo" src="./frontend/public/logo.png" width="130" style="border-radius: 50%;">
@@ -86,7 +86,7 @@ bash <(curl -Ls https://raw.githubusercontent.com/yrkas1488-ship-it/samarka-pane
 
 После завершения установки в терминале отобразятся учетные данные и адрес для входа. При первом открытии веб-панели вас встретит удобный **Мастер первичной настройки**, который поможет выбрать роль сервера и при необходимости настроить CDN в 1 клик.
 
-Управление службой на сервере осуществляется командой `samarka` или `x-ui`.
+Управление службой на сервере осуществляется командой `samarka`.
 
 ---
 
@@ -95,9 +95,9 @@ bash <(curl -Ls https://raw.githubusercontent.com/yrkas1488-ship-it/samarka-pane
 1. **SQLite** (по умолчанию / default) — один файл базы данных `/etc/x-ui/x-ui.db`. Идеально подходит для автономных серверов и нагрузок до 500+ активных клиентов.
 2. **PostgreSQL** — рекомендуется для крупных распределенных кластеров с большим количеством нод и пользователей. Установщик может настроить локальный PostgreSQL автоматически или подключиться к внешнему серверу.
 
-Миграция с SQLite на PostgreSQL в любой момент / Migrate to PostgreSQL at any time:
+Миграция базы данных в любой момент / Migrate database at any time:
 ```bash
-x-ui migrate-db --dsn "postgres://user:password@127.0.0.1:5432/samarka?sslmode=disable"
+samarka migrateDB
 ```
 
 ---
