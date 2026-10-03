@@ -1352,17 +1352,30 @@ install_x-ui() {
     local samarka_repo="${SAMARKA_REPO:-"yrkas1488-ship-it/samarka-panel"}"
 
     if [[ "$1" == "local" ]]; then
-        echo -e "${green}Установка Samarka v0.1.1.2 из локальных файлов...${plain}"
+        echo -e "${green}Установка Samarka v0.2.0 из локальных файлов...${plain}"
         mkdir -p "${xui_folder}"
         cp -rf "${cur_dir}"/* "${xui_folder}/"
         cd "${xui_folder}"
-        tag_version="0.1.1.2"
+        tag_version="0.2.0"
     else
         # Download resources
         if [ $# == 0 ]; then
             tag_version=$(curl -Ls --retry 5 --retry-delay 3 --connect-timeout 15 --max-time 60 "https://api.github.com/repos/${samarka_repo}/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
             if [[ ! -n "$tag_version" ]]; then
                 tag_version=$(curl -Ls --retry 5 --retry-delay 3 --connect-timeout 15 --max-time 60 "https://api.github.com/repos/${samarka_repo}/releases" | grep '"tag_name":' | head -n 1 | sed -E 's/.*"([^"]+)".*/\1/')
+            fi
+            if [[ ! -n "$tag_version" ]]; then
+                tag_version=$(curl -Ls --retry 5 --retry-delay 3 --connect-timeout 15 --max-time 60 "https://api.github.com/repos/${samarka_repo}/tags" | grep '"name":' | head -n 1 | sed -E 's/.*"([^"]+)".*/\1/')
+            fi
+            if [[ ! -n "$tag_version" ]]; then
+                local raw_ver=$(curl -Ls "https://raw.githubusercontent.com/${samarka_repo}/main/internal/config/version" 2> /dev/null | tr -d ' \r\n')
+                if [[ -n "$raw_ver" ]]; then
+                    if [[ "$raw_ver" == v* ]]; then
+                        tag_version="$raw_ver"
+                    else
+                        tag_version="v${raw_ver}"
+                    fi
+                fi
             fi
             if [[ ! -n "$tag_version" ]]; then
                 echo -e "${red}Failed to fetch Samarka version, it may be due to GitHub API restrictions, please try it later${plain}"

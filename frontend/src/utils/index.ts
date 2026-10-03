@@ -934,3 +934,6 @@ export class IntlUtil {
     return formatter.format(diff, 'day');
   }
 }
+
+export * from './funnyNames';
+

@@ -244,25 +244,25 @@ export default function AppSidebar() {
     <div className="ant-sidebar">
       <Layout.Sider
         theme={currentTheme}
-        width={220}
+        width={245}
         collapsible
         collapsed={collapsed}
         breakpoint="md"
         onCollapse={onSiderCollapse}
       >
         <div className={`sider-brand${collapsed ? ' sider-brand-collapsed' : ''}`}>
-          <div className="brand-block" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div className="brand-avatar-wrapper" style={{ position: 'relative', display: 'inline-flex' }}>
+          <div className="brand-block" style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, flex: '1 1 auto' }}>
+            <div className="brand-avatar-wrapper" style={{ position: 'relative', display: 'inline-flex', flexShrink: 0 }}>
               <img src={logoImg} alt="Samarka" style={{ width: 34, height: 34, borderRadius: 8, objectFit: 'cover' }} />
               <span className="brand-status-dot" />
             </div>
             {!collapsed && (
-              <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.2 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.2, minWidth: 0 }}>
                 <span className="brand-text" style={{ fontSize: 15, fontWeight: 700, color: '#f8fafc', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>
                   Панель Самарка
                 </span>
                 <span style={{ fontSize: 11, color: '#f59e0b', fontFamily: 'monospace', fontWeight: 600 }}>
-                  v0.1.1.2
+                  v0.2.0
                 </span>
               </div>
             )}
@@ -327,7 +327,7 @@ export default function AppSidebar() {
                 Панель Самарка
               </span>
               <span style={{ fontSize: 11, color: '#f59e0b', fontFamily: 'monospace', fontWeight: 600 }}>
-                v0.1.1.2
+                v0.2.0
               </span>
             </div>
           </div>

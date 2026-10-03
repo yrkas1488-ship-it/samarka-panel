@@ -903,7 +903,23 @@ update_x-ui() {
         tag_version="${XUI_UPDATE_TAG}"
         echo -e "${green}Using update tag: ${tag_version}${plain}"
     else
-        tag_version=$(${curl_bin} -Ls "https://api.github.com/repos/${samarka_repo}/releases/latest" 2> /dev/null | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+        tag_version=$(${curl_bin} -Ls "https://api.github.com/repos/${samarka_repo}/releases/latest" 2> /dev/null | grep '"tag_name":' | head -n 1 | sed -E 's/.*"([^"]+)".*/\1/')
+        if [[ ! -n "$tag_version" ]]; then
+            tag_version=$(${curl_bin} -Ls "https://api.github.com/repos/${samarka_repo}/releases" 2> /dev/null | grep '"tag_name":' | head -n 1 | sed -E 's/.*"([^"]+)".*/\1/')
+        fi
+        if [[ ! -n "$tag_version" ]]; then
+            tag_version=$(${curl_bin} -Ls "https://api.github.com/repos/${samarka_repo}/tags" 2> /dev/null | grep '"name":' | head -n 1 | sed -E 's/.*"([^"]+)".*/\1/')
+        fi
+        if [[ ! -n "$tag_version" ]]; then
+            local raw_ver=$(${curl_bin} -Ls "https://raw.githubusercontent.com/${samarka_repo}/main/internal/config/version" 2> /dev/null | tr -d ' \r\n')
+            if [[ -n "$raw_ver" ]]; then
+                if [[ "$raw_ver" == v* ]]; then
+                    tag_version="$raw_ver"
+                else
+                    tag_version="v${raw_ver}"
+                fi
+            fi
+        fi
         if [[ ! -n "$tag_version" ]]; then
             _fail "ERROR: Failed to fetch version from ${samarka_repo}, please check GitHub connection"
         fi

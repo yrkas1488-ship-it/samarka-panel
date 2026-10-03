@@ -22,9 +22,11 @@ import {
   CloudServerOutlined,
   ReloadOutlined,
   CrownOutlined,
+  EyeInvisibleOutlined,
+  EyeOutlined,
 } from '@ant-design/icons';
 
-import { HttpUtil, RandomUtil, ClipboardManager } from '@/utils';
+import { HttpUtil, RandomUtil, ClipboardManager, getRandomFunnyRussianSlug } from '@/utils';
 import { useTheme } from '@/hooks/useTheme';
 import { useStatusQuery } from '@/api/queries/useStatusQuery';
 import AppSidebar from '@/layouts/AppSidebar';
@@ -243,15 +245,8 @@ export default function IndexPage() {
         });
         setSnifferRows(rows.reverse());
       } else {
-        // Fallback live telemetry rows when quiet
-        const now = new Date();
-        const t1 = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
-        const prevSec = (now.getSeconds() - 3 + 60) % 60;
-        const t2 = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(prevSec).padStart(2, '0')}`;
-        setSnifferRows([
-          { time: t1, client: 'alex_iphone', protocol: 'VLESS-Reality', targetDomain: 'apple.com', status: 'Direct' },
-          { time: t2, client: 'work_laptop', protocol: 'VLESS-Reality', targetDomain: 'api.github.com', status: 'Direct' },
-        ]);
+        // Real traffic sessions only: no mock data
+        setSnifferRows([]);
       }
     } catch {
       // ignore
@@ -276,7 +271,7 @@ export default function IndexPage() {
     return () => clearInterval(interval);
   }, []);
 
-  // Quick 1-click Reality creation
+  // Quick 1-click Reality creation with funny random transliterated names
   const handleCreateRealityInbound = async () => {
     setCreatingQuickInbound(true);
     try {
@@ -288,9 +283,10 @@ export default function IndexPage() {
         publicKey = keyRes.obj.publicKey;
       }
       const shortId = RandomUtil.randomSeq(8, { type: 'hex' });
+      const funnySlug = getRandomFunnyRussianSlug();
       const payload = {
         enable: true,
-        remark: 'VLESS Reality (TCP)',
+        remark: funnySlug,
         port: 8443,
         protocol: 'vless',
         listen: '',
@@ -299,7 +295,7 @@ export default function IndexPage() {
             {
               id: RandomUtil.randomUUID(),
               flow: 'xtls-rprx-vision',
-              email: `reality_${RandomUtil.randomLowerAndNum(6)}@samarka`,
+              email: `${funnySlug}@samarka`,
               limitIp: 0,
               totalGB: 0,
               expiryTime: 0,
@@ -337,7 +333,7 @@ export default function IndexPage() {
       };
       const res = await HttpUtil.post('/panel/api/inbounds/add', payload);
       if (res?.success) {
-        messageApi.success('Входящее подключение VLESS Reality (8443) создано!');
+        messageApi.success(`Создано подключение ${funnySlug}!`);
         fetchInboundsList();
       } else {
         messageApi.error(res?.msg || 'Не удалось создать входящее подключение');
@@ -350,13 +346,14 @@ export default function IndexPage() {
     }
   };
 
-  // Quick 1-click CDN creation
+  // Quick 1-click CDN creation with funny random names
   const handleCreateCdnInbound = async () => {
     setCreatingQuickInbound(true);
     try {
+      const funnySlug = `cdn_${getRandomFunnyRussianSlug()}`;
       const payload = {
         enable: true,
-        remark: 'Samarka-Yandex-XHTTP',
+        remark: funnySlug,
         port: 443,
         protocol: 'vless',
         listen: '',
@@ -365,7 +362,7 @@ export default function IndexPage() {
             {
               id: RandomUtil.randomUUID(),
               flow: '',
-              email: `cdn_${RandomUtil.randomLowerAndNum(6)}@samarka`,
+              email: `${funnySlug}@samarka`,
               limitIp: 0,
               totalGB: 0,
               expiryTime: 0,
@@ -402,7 +399,7 @@ export default function IndexPage() {
       };
       const res = await HttpUtil.post('/panel/api/inbounds/add', payload);
       if (res?.success) {
-        messageApi.success('Входящее подключение CDN (XHTTP 443) создано!');
+        messageApi.success(`Создано CDN подключение ${funnySlug}!`);
         fetchInboundsList();
       } else {
         messageApi.error(res?.msg || 'Не удалось создать CDN подключение (порт 443 занят?)');
@@ -439,7 +436,29 @@ export default function IndexPage() {
     );
   }, [snifferRows, searchQuery]);
 
-  const hostName = status?.publicIP?.ipv4 || window.location.hostname || 'nl-ams-01';
+  const [hideHostIp, setHideHostIp] = useState(() => localStorage.getItem('samarka_hide_ip') === 'true');
+
+  const toggleHideHostIp = () => {
+    setHideHostIp((prev) => {
+      const next = !prev;
+      localStorage.setItem('samarka_hide_ip', String(next));
+      return next;
+    });
+  };
+
+  const hostName = String(status?.publicIP?.ipv4 || window.location.hostname || 'nl-ams-01');
+  const displayHost = useMemo(() => {
+    if (!hideHostIp) return hostName;
+    if (/^\d+\.\d+\.\d+\.\d+$/.test(hostName)) {
+      const parts = hostName.split('.');
+      return `${parts[0]}.${parts[1]}.***.***`;
+    }
+    if (hostName.length > 6) {
+      return `${hostName.slice(0, 3)}***${hostName.slice(-3)}`;
+    }
+    return '••••••••';
+  }, [hostName, hideHostIp]);
+
   const memUsedMb = Math.round((status?.mem?.current || 52428800) / (1024 * 1024));
   const rawCpu = status?.cpu
     ? (typeof status.cpu.percent === 'number'
@@ -460,10 +479,33 @@ export default function IndexPage() {
           <Layout.Content className="content-area">
             {/* 1. TOP HEADER BAR matching the mockup */}
             <div className="samarka-header-bar">
-              <div className="samarka-host-badge">
+              <div
+                className="samarka-host-badge"
+                role="button"
+                tabIndex={0}
+                onClick={toggleHideHostIp}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleHideHostIp();
+                  }
+                }}
+                style={{ cursor: 'pointer', userSelect: 'none' }}
+                title={hideHostIp ? 'Нажмите, чтобы показать IP / Show IP' : 'Нажмите, чтобы скрыть IP / Hide IP'}
+              >
                 <span className="samarka-host-label">HOST / УЗЕЛ:</span>
-                <span className="samarka-host-val">{hostName}</span>
-                <span className="live-pulsing-dot" style={{ marginLeft: 8 }} />
+                <span className="samarka-host-val">{displayHost}</span>
+                <Button
+                  type="text"
+                  size="small"
+                  icon={hideHostIp ? <EyeInvisibleOutlined style={{ color: '#f59e0b', fontSize: 13 }} /> : <EyeOutlined style={{ color: 'rgba(255,255,255,0.45)', fontSize: 13 }} />}
+                  style={{ padding: '0 4px', height: 'auto', marginLeft: 4 }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleHideHostIp();
+                  }}
+                />
+                <span className="live-pulsing-dot" style={{ marginLeft: 6 }} />
               </div>
 
               <div className="samarka-search-box">
@@ -500,7 +542,7 @@ export default function IndexPage() {
               </div>
             </div>
 
-            {/* 2. TOP BANNER CARD - Samarka Panel v0.1.1.2 with Bilingual Description */}
+            {/* 2. TOP BANNER CARD - Samarka Panel v0.2.0 with Bilingual Description */}
             <div className="samarka-banner-card">
               <div className="samarka-banner-content">
                 <Space align="start" size={14} style={{ flex: 1, minWidth: 280 }}>
@@ -509,7 +551,7 @@ export default function IndexPage() {
                   </div>
                   <div>
                     <div className="samarka-banner-title">
-                      🦊 Панель Самарка v0.1.1.2 · Samarka Xray Panel
+                      🦊 Панель Самарка v0.2.0 · Samarka Xray Panel
                     </div>
                     <div className="samarka-banner-subtitle">
                       Роль узла / Node role: <span className="samarka-role-text">{roleLabel}</span> | Веб-порт / Web port: <b className="samarka-amber-bold">2053</b> | Протоколы / Protocols: <b className="samarka-amber-bold">Reality 8443</b> / CDN <b className="samarka-amber-bold">443</b>
