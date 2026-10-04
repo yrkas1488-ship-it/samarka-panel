@@ -252,7 +252,7 @@ server {
         title={
           <Space>
             <RocketOutlined style={{ color: '#f59e0b', fontSize: 20 }} />
-            <span style={{ fontSize: 18, fontWeight: 700 }}>Мастер настройки Панели Самарка v0.2.0</span>
+            <span style={{ fontSize: 18, fontWeight: 700 }}>Мастер настройки Панели Самарка v0.2.1</span>
             <Tag color="gold">Веб-конфигуратор</Tag>
           </Space>
         }

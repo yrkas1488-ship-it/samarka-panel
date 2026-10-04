@@ -1,13 +1,20 @@
 /* ========================================================
-   Панель Самарка v0.2.0 (Samarka Panel) - Premium Redesign
+   Панель Самарка v0.2.1 (Samarka Panel) - Premium Redesign
    ======================================================== */
 
 .index-page {
+  min-height: 100vh;
+}
+
+.index-page.is-dark {
   background: radial-gradient(circle at 15% 10%, rgba(30, 58, 138, 0.18) 0%, transparent 60%),
               radial-gradient(circle at 85% 80%, rgba(245, 158, 11, 0.08) 0%, transparent 50%),
               #070d18 !important;
-  min-height: 100vh;
   color: #f1f5f9;
+}
+
+.index-page.is-dark.is-ultra {
+  background: #000000 !important;
 }
 
 .index-page .content-area {
@@ -707,3 +714,278 @@
     opacity: 0.7;
   }
 }
+
+/* ========================================================
+   LIGHT MODE OVERRIDES FOR SAMARKA DASHBOARD (v0.2.1)
+   ======================================================== */
+
+.index-page:not(.is-dark),
+.index-page.is-light {
+  background: radial-gradient(circle at 15% 10%, rgba(219, 234, 254, 0.55) 0%, transparent 60%),
+              radial-gradient(circle at 85% 80%, rgba(254, 243, 199, 0.55) 0%, transparent 50%),
+              #f8fafc !important;
+  color: #0f172a !important;
+}
+
+/* 1. Header Bar in Light Mode */
+.index-page:not(.is-dark) .samarka-header-bar,
+.index-page.is-light .samarka-header-bar {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.index-page:not(.is-dark) .samarka-host-badge,
+.index-page.is-light .samarka-host-badge {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+}
+
+.index-page:not(.is-dark) .samarka-host-label,
+.index-page.is-light .samarka-host-label {
+  color: #64748b;
+}
+
+.index-page:not(.is-dark) .samarka-host-val,
+.index-page.is-light .samarka-host-val {
+  color: #0284c7;
+}
+
+.index-page:not(.is-dark) .samarka-search-input,
+.index-page.is-light .samarka-search-input {
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+.index-page:not(.is-dark) .samarka-search-input input,
+.index-page.is-light .samarka-search-input input {
+  color: #0f172a !important;
+}
+
+.index-page:not(.is-dark) .samarka-search-input input::placeholder,
+.index-page.is-light .samarka-search-input input::placeholder {
+  color: #94a3b8 !important;
+}
+
+.index-page:not(.is-dark) .samarka-speed-badge,
+.index-page.is-light .samarka-speed-badge {
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+}
+
+.index-page:not(.is-dark) .samarka-speed-down,
+.index-page:not(.is-dark) .samarka-speed-up,
+.index-page.is-light .samarka-speed-down,
+.index-page.is-light .samarka-speed-up {
+  color: #d97706;
+}
+
+.index-page:not(.is-dark) .samarka-metric-sub,
+.index-page.is-light .samarka-metric-sub {
+  color: rgba(180, 83, 9, 0.85);
+}
+
+.index-page:not(.is-dark) .samarka-metric-item,
+.index-page.is-light .samarka-metric-item {
+  color: #334155;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.index-page:not(.is-dark) .samarka-metric-item b,
+.index-page.is-light .samarka-metric-item b {
+  color: #0284c7;
+}
+
+/* 2. Banner Card in Light Mode */
+.index-page:not(.is-dark) .samarka-banner-card,
+.index-page.is-light .samarka-banner-card {
+  background: linear-gradient(135deg, rgba(239, 246, 255, 0.95) 0%, rgba(255, 255, 255, 0.98) 70%, rgba(254, 243, 199, 0.55) 100%);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.index-page:not(.is-dark) .samarka-banner-title,
+.index-page.is-light .samarka-banner-title {
+  color: #0f172a;
+}
+
+.index-page:not(.is-dark) .samarka-banner-subtitle,
+.index-page.is-light .samarka-banner-subtitle {
+  color: #475569;
+}
+
+.index-page:not(.is-dark) .samarka-role-text,
+.index-page.is-light .samarka-role-text {
+  color: #0f172a;
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.index-page:not(.is-dark) .samarka-banner-bilingual-desc,
+.index-page.is-light .samarka-banner-bilingual-desc {
+  background: rgba(241, 245, 249, 0.9);
+  border: 1px solid #e2e8f0;
+}
+
+.index-page:not(.is-dark) .bilingual-line-ru,
+.index-page:not(.is-dark) .bilingual-line-en,
+.index-page.is-light .bilingual-line-ru,
+.index-page.is-light .bilingual-line-en {
+  color: #334155;
+}
+
+/* 3. Section Titles in Light Mode */
+.index-page:not(.is-dark) .samarka-section-title,
+.index-page.is-light .samarka-section-title {
+  color: #0f172a;
+}
+
+.index-page:not(.is-dark) .samarka-section-desc,
+.index-page.is-light .samarka-section-desc {
+  color: #64748b;
+}
+
+/* 4. Inbound Cards in Light Mode */
+.index-page:not(.is-dark) .samarka-inbound-card,
+.index-page.is-light .samarka-inbound-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.index-page:not(.is-dark) .samarka-inbound-card::before,
+.index-page.is-light .samarka-inbound-card::before {
+  background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.4), transparent);
+}
+
+.index-page:not(.is-dark) .samarka-inbound-card:hover,
+.index-page.is-light .samarka-inbound-card:hover {
+  border-color: rgba(245, 158, 11, 0.5);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08), 0 0 16px rgba(245, 158, 11, 0.12);
+}
+
+.index-page:not(.is-dark) .samarka-inbound-title,
+.index-page.is-light .samarka-inbound-title {
+  color: #0f172a;
+}
+
+.index-page:not(.is-dark) .samarka-inbound-port .port-number,
+.index-page.is-light .samarka-inbound-port .port-number {
+  color: #0f172a;
+}
+
+.index-page:not(.is-dark) .samarka-inbound-port .port-badge,
+.index-page.is-light .samarka-inbound-port .port-badge {
+  color: #64748b;
+}
+
+.index-page:not(.is-dark) .detail-label,
+.index-page.is-light .detail-label {
+  color: #64748b;
+}
+
+.index-page:not(.is-dark) .detail-val,
+.index-page.is-light .detail-val {
+  color: #1e293b;
+}
+
+.index-page:not(.is-dark) .detail-val.mono,
+.index-page.is-light .detail-val.mono {
+  color: #0284c7;
+}
+
+.index-page:not(.is-dark) .samarka-card-bottom,
+.index-page.is-light .samarka-card-bottom {
+  border-top: 1px solid #f1f5f9;
+}
+
+.index-page:not(.is-dark) .samarka-sub-badge,
+.index-page.is-light .samarka-sub-badge {
+  color: #64748b;
+}
+
+.index-page:not(.is-dark) .samarka-active-label,
+.index-page.is-light .samarka-active-label {
+  color: #334155;
+}
+
+.index-page:not(.is-dark) .samarka-empty-inbounds-card,
+.index-page.is-light .samarka-empty-inbounds-card {
+  background: #ffffff;
+  border: 1px dashed rgba(245, 158, 11, 0.5);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+.index-page:not(.is-dark) .samarka-empty-title,
+.index-page.is-light .samarka-empty-title {
+  color: #0f172a;
+}
+
+.index-page:not(.is-dark) .samarka-empty-desc,
+.index-page.is-light .samarka-empty-desc {
+  color: #64748b;
+}
+
+/* 5. Live Sniffer Table in Light Mode */
+.index-page:not(.is-dark) .samarka-sniffer-container,
+.index-page.is-light .samarka-sniffer-container {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.index-page:not(.is-dark) .samarka-sniffer-table th,
+.index-page.is-light .samarka-sniffer-table th {
+  color: #64748b;
+  border-bottom: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.index-page:not(.is-dark) .samarka-sniffer-table td,
+.index-page.is-light .samarka-sniffer-table td {
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+}
+
+.index-page:not(.is-dark) .samarka-sniffer-table tr:hover td,
+.index-page.is-light .samarka-sniffer-table tr:hover td {
+  background: #f8fafc;
+}
+
+.index-page:not(.is-dark) .samarka-sniffer-table .col-time,
+.index-page.is-light .samarka-sniffer-table .col-time {
+  color: #64748b;
+}
+
+.index-page:not(.is-dark) .samarka-sniffer-table .col-client,
+.index-page.is-light .samarka-sniffer-table .col-client {
+  color: #0f172a;
+}
+
+.index-page:not(.is-dark) .samarka-sniffer-table .col-proto-badge,
+.index-page.is-light .samarka-sniffer-table .col-proto-badge {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  color: #334155;
+}
+
+.index-page:not(.is-dark) .samarka-sniffer-table .col-domain,
+.index-page.is-light .samarka-sniffer-table .col-domain {
+  color: #0284c7;
+}
+
+.index-page:not(.is-dark) .samarka-refresh-btn,
+.index-page.is-light .samarka-refresh-btn {
+  color: #475569 !important;
+}
+
+.index-page:not(.is-dark) .status-direct,
+.index-page:not(.is-dark) .status-blocked,
+.index-page:not(.is-dark) .status-proxy,
+.index-page.is-light .status-direct,
+.index-page.is-light .status-blocked,
+.index-page.is-light .status-proxy {
+  background: #f8fafc;
+}
+

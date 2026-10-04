@@ -87,7 +87,7 @@ function formatTrafficSpeed(bytesPerSec: number): string {
 
 export default function IndexPage() {
   const navigate = useNavigate();
-  const { antdThemeConfig } = useTheme();
+  const { isDark, isUltra, antdThemeConfig } = useTheme();
   const { status } = useStatusQuery();
   const [messageApi, messageContextHolder] = message.useMessage();
 
@@ -472,7 +472,7 @@ export default function IndexPage() {
   return (
     <ConfigProvider theme={antdThemeConfig}>
       {messageContextHolder}
-      <Layout className="index-page is-dark is-ultra">
+      <Layout className={`index-page${isDark ? ' is-dark' : ' is-light'}${isUltra ? ' is-ultra' : ''}`}>
         <AppSidebar />
 
         <Layout className="content-shell">
@@ -498,7 +498,7 @@ export default function IndexPage() {
                 <Button
                   type="text"
                   size="small"
-                  icon={hideHostIp ? <EyeInvisibleOutlined style={{ color: '#f59e0b', fontSize: 13 }} /> : <EyeOutlined style={{ color: 'rgba(255,255,255,0.45)', fontSize: 13 }} />}
+                  icon={hideHostIp ? <EyeInvisibleOutlined style={{ color: '#f59e0b', fontSize: 13 }} /> : <EyeOutlined style={{ color: isDark ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.45)', fontSize: 13 }} />}
                   style={{ padding: '0 4px', height: 'auto', marginLeft: 4 }}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -511,7 +511,7 @@ export default function IndexPage() {
               <div className="samarka-search-box">
                 <Input
                   ref={searchInputRef}
-                  prefix={<SearchOutlined style={{ color: 'rgba(255,255,255,0.45)' }} />}
+                  prefix={<SearchOutlined style={{ color: isDark ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.45)' }} />}
                   placeholder="[Поиск / Search: Cmd+K]"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
@@ -542,7 +542,7 @@ export default function IndexPage() {
               </div>
             </div>
 
-            {/* 2. TOP BANNER CARD - Samarka Panel v0.2.0 with Bilingual Description */}
+            {/* 2. TOP BANNER CARD - Samarka Panel v0.2.1 with Bilingual Description */}
             <div className="samarka-banner-card">
               <div className="samarka-banner-content">
                 <Space align="start" size={14} style={{ flex: 1, minWidth: 280 }}>
@@ -551,7 +551,7 @@ export default function IndexPage() {
                   </div>
                   <div>
                     <div className="samarka-banner-title">
-                      🦊 Панель Самарка v0.2.0 · Samarka Xray Panel
+                      🦊 Панель Самарка v0.2.1 · Samarka Xray Panel
                     </div>
                     <div className="samarka-banner-subtitle">
                       Роль узла / Node role: <span className="samarka-role-text">{roleLabel}</span> | Веб-порт / Web port: <b className="samarka-amber-bold">2053</b> | Протоколы / Protocols: <b className="samarka-amber-bold">Reality 8443</b> / CDN <b className="samarka-amber-bold">443</b>

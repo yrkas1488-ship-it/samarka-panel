@@ -258,11 +258,11 @@ export default function AppSidebar() {
             </div>
             {!collapsed && (
               <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.2, minWidth: 0 }}>
-                <span className="brand-text" style={{ fontSize: 15, fontWeight: 700, color: '#f8fafc', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>
+                <span className="brand-text" style={{ fontSize: 15, fontWeight: 700, color: isDark ? '#f8fafc' : '#0f172a', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>
                   Панель Самарка
                 </span>
                 <span style={{ fontSize: 11, color: '#f59e0b', fontFamily: 'monospace', fontWeight: 600 }}>
-                  v0.2.0
+                  v0.2.1
                 </span>
               </div>
             )}
@@ -323,11 +323,11 @@ export default function AppSidebar() {
               <span className="brand-status-dot" />
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.2 }}>
-              <span className="drawer-brand" style={{ fontSize: 15, fontWeight: 700, color: '#f8fafc', whiteSpace: 'nowrap' }}>
+              <span className="drawer-brand" style={{ fontSize: 15, fontWeight: 700, color: isDark ? '#f8fafc' : '#0f172a', whiteSpace: 'nowrap' }}>
                 Панель Самарка
               </span>
               <span style={{ fontSize: 11, color: '#f59e0b', fontFamily: 'monospace', fontWeight: 600 }}>
-                v0.2.0
+                v0.2.1
               </span>
             </div>
           </div>

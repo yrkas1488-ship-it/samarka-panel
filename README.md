@@ -1,4 +1,4 @@
-# 🦊 Панель Самарка v0.2.0 · Samarka Panel v0.2.0
+# 🦊 Панель Самарка v0.2.1 · Samarka Panel v0.2.1
 
 <p align="center">
   <img alt="Samarka Logo" src="./frontend/public/logo.png" width="130" style="border-radius: 50%;">
