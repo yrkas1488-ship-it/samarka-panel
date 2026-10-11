@@ -209,6 +209,7 @@ export default function SettingsPage() {
       case 'domain':
         return (
           <DomainBindingCard
+            initialDomain={allSetting.webDomain}
             serverIp={entryHost}
             panelPort={Number(allSetting.webPort) || 2053}
             webBasePath={allSetting.webBasePath}

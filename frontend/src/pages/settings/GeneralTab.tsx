@@ -249,6 +249,7 @@ export default function GeneralTab({ allSetting, updateSetting }: GeneralTabProp
         children: (
           <>
             <DomainBindingCard
+              initialDomain={allSetting.webDomain}
               panelPort={allSetting.webPort || 2053}
               webBasePath={allSetting.webBasePath || '/'}
               onApplyDomainCert={(cert, key) => updateSetting({ webCertFile: cert, webKeyFile: key })}

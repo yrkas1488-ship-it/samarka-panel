@@ -80,6 +80,10 @@ func (a *ServerController) initRouter(g *gin.RouterGroup) {
 	g.POST("/scanRealityTarget", a.scanRealityTarget)
 	g.POST("/scanRealityTargets", a.scanRealityTargets)
 	g.POST("/clientIps", a.setClientIps)
+	g.POST("/domain/checkDns", a.checkDomainDns)
+	g.POST("/domain/issueCert", a.issueDomainCert)
+	g.POST("/domain/setupNginx", a.setupNginxProxy)
+	g.POST("/domain/cleanBasePath", a.cleanBasePath)
 }
 
 // startTask registers the @2s ticker that refreshes server status, samples
@@ -513,3 +517,86 @@ func (a *ServerController) setClientIps(c *gin.Context) {
 	err := (&service.InboundService{}).MergeInboundClientIps(ips)
 	jsonMsg(c, "Client IPs merged", err)
 }
+
+func (a *ServerController) checkDomainDns(c *gin.Context) {
+	domain := c.PostForm("domain")
+	if domain == "" {
+		var req struct {
+			Domain string `json:"domain"`
+		}
+		if err := c.ShouldBindJSON(&req); err == nil {
+			domain = req.Domain
+		}
+	}
+	res, err := a.serverService.CheckDomainDns(domain)
+	if err != nil {
+		jsonMsg(c, err.Error(), err)
+		return
+	}
+	jsonObj(c, res, nil)
+}
+
+func (a *ServerController) issueDomainCert(c *gin.Context) {
+	domain := c.PostForm("domain")
+	force, _ := strconv.ParseBool(c.PostForm("force"))
+	if domain == "" {
+		var req struct {
+			Domain string `json:"domain"`
+			Force  bool   `json:"force"`
+		}
+		if err := c.ShouldBindJSON(&req); err == nil {
+			domain = req.Domain
+			force = req.Force
+		}
+	}
+	res, err := a.serverService.IssueDomainCertificate(domain, force)
+	if err != nil {
+		jsonMsg(c, err.Error(), err)
+		return
+	}
+	if res.CertFile != "" && res.KeyFile != "" {
+		_ = a.settingService.SetCertFile(res.CertFile)
+		_ = a.settingService.SetKeyFile(res.KeyFile)
+	}
+	jsonObj(c, res, nil)
+}
+
+func (a *ServerController) setupNginxProxy(c *gin.Context) {
+	domain := c.PostForm("domain")
+	portStr := c.PostForm("panelPort")
+	port, _ := strconv.Atoi(portStr)
+	if domain == "" {
+		var req struct {
+			Domain    string `json:"domain"`
+			PanelPort int    `json:"panelPort"`
+		}
+		if err := c.ShouldBindJSON(&req); err == nil {
+			domain = req.Domain
+			port = req.PanelPort
+		}
+	}
+	if port <= 0 {
+		port, _ = a.settingService.GetPort()
+		if port <= 0 {
+			port = 2053
+		}
+	}
+	certFile, _ := a.settingService.GetCertFile()
+	useHttps := certFile != ""
+	msg, err := a.serverService.SetupNginxProxy(domain, port, useHttps)
+	if err != nil {
+		jsonMsg(c, err.Error(), err)
+		return
+	}
+	jsonMsg(c, msg, nil)
+}
+
+func (a *ServerController) cleanBasePath(c *gin.Context) {
+	err := a.settingService.SetBasePath("/")
+	if err != nil {
+		jsonMsg(c, err.Error(), err)
+		return
+	}
+	jsonMsg(c, "Секретный ключ успешно сброшен на корень (/)", nil)
+}
+

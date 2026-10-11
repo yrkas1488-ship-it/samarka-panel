@@ -2206,3 +2206,247 @@ func (s *ServerService) GetNewmlkem768() (any, error) {
 
 	return keyPair, nil
 }
+
+// DomainCertResult holds the result of issuing/finding an SSL certificate.
+type DomainCertResult struct {
+	CertFile string `json:"certFile"`
+	KeyFile  string `json:"keyFile"`
+	Reused   bool   `json:"reused"`
+	Message  string `json:"message"`
+}
+
+func fileExists(p string) bool {
+	if p == "" {
+		return false
+	}
+	info, err := os.Stat(p)
+	return err == nil && !info.IsDir()
+}
+
+// FindExistingDomainCert looks for an existing TLS certificate for the domain.
+func (s *ServerService) FindExistingDomainCert(domain string) (certFile, keyFile string, found bool) {
+	clean := strings.TrimSpace(strings.ToLower(domain))
+	candidates := [][]string{
+		{"/root/cert/" + clean + "/fullchain.pem", "/root/cert/" + clean + "/privkey.pem"},
+		{"/etc/letsencrypt/live/" + clean + "/fullchain.pem", "/etc/letsencrypt/live/" + clean + "/privkey.pem"},
+		{"/root/.acme.sh/" + clean + "_ecc/fullchain.cer", "/root/.acme.sh/" + clean + "_ecc/" + clean + ".key"},
+		{"/root/.acme.sh/" + clean + "/fullchain.cer", "/root/.acme.sh/" + clean + "/" + clean + ".key"},
+	}
+	for _, pair := range candidates {
+		if fileExists(pair[0]) && fileExists(pair[1]) {
+			return pair[0], pair[1], true
+		}
+	}
+	return "", "", false
+}
+
+// CheckDomainDns resolves the given domain and verifies if it points to this server.
+func (s *ServerService) CheckDomainDns(domain string) (map[string]any, error) {
+	clean := strings.TrimSpace(strings.ToLower(domain))
+	if clean == "" {
+		return nil, fmt.Errorf("домен не может быть пустым")
+	}
+	ips, err := stdnet.LookupIP(clean)
+	if err != nil {
+		return nil, fmt.Errorf("не удалось разрешить домен %s: %w", clean, err)
+	}
+	ipStrs := make([]string, 0, len(ips))
+	for _, ip := range ips {
+		ipStrs = append(ipStrs, ip.String())
+	}
+	status := s.LastStatus()
+	serverIp := ""
+	if status != nil && status.PublicIP != nil {
+		serverIp = status.PublicIP.IPv4
+	}
+	matched := false
+	for _, ip := range ipStrs {
+		if serverIp != "" && ip == serverIp {
+			matched = true
+			break
+		}
+	}
+	return map[string]any{
+		"domain":      clean,
+		"resolvedIps": ipStrs,
+		"serverIp":    serverIp,
+		"matched":     matched,
+	}, nil
+}
+
+// IssueDomainCertificate attempts to issue or find an SSL certificate for the domain.
+func (s *ServerService) IssueDomainCertificate(domain string, force bool) (*DomainCertResult, error) {
+	clean := strings.TrimSpace(strings.ToLower(domain))
+	if clean == "" {
+		return nil, fmt.Errorf("домен не может быть пустым")
+	}
+
+	if !force {
+		if certFile, keyFile, found := s.FindExistingDomainCert(clean); found {
+			return &DomainCertResult{
+				CertFile: certFile,
+				KeyFile:  keyFile,
+				Reused:   true,
+				Message:  "Использован существующий сертификат",
+			}, nil
+		}
+	}
+
+	// Try acme.sh first
+	acmeBin := "/root/.acme.sh/acme.sh"
+	if !fileExists(acmeBin) {
+		home, _ := os.UserHomeDir()
+		acmeBin = filepath.Join(home, ".acme.sh", "acme.sh")
+		if !fileExists(acmeBin) {
+			if p, err := exec.LookPath("acme.sh"); err == nil {
+				acmeBin = p
+			} else {
+				acmeBin = ""
+			}
+		}
+	}
+
+	certDir := filepath.Join("/root", "cert", clean)
+	_ = os.MkdirAll(certDir, 0755)
+	destCert := filepath.Join(certDir, "fullchain.pem")
+	destKey := filepath.Join(certDir, "privkey.pem")
+
+	if acmeBin != "" {
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
+		defer cancel()
+
+		cmd := exec.CommandContext(ctx, acmeBin, "--issue", "-d", clean, "--standalone", "--httpport", "80", "--force")
+		out, err := cmd.CombinedOutput()
+		if err != nil && !strings.Contains(string(out), "Domains not changed") {
+			logger.Warningf("acme.sh issue: %v, output: %s", err, string(out))
+		}
+
+		installCmd := exec.CommandContext(ctx, acmeBin, "--installcert", "-d", clean,
+			"--key-file", destKey,
+			"--fullchain-file", destCert)
+		installOut, installErr := installCmd.CombinedOutput()
+		if installErr == nil && fileExists(destCert) && fileExists(destKey) {
+			return &DomainCertResult{
+				CertFile: destCert,
+				KeyFile:  destKey,
+				Reused:   false,
+				Message:  "Сертификат успешно выпущен и установлен через acme.sh!",
+			}, nil
+		}
+		logger.Warningf("acme.sh install error: %v, out: %s", installErr, string(installOut))
+	}
+
+	// Fallback to certbot
+	if certbotBin, err := exec.LookPath("certbot"); err == nil {
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
+		defer cancel()
+
+		cmd := exec.CommandContext(ctx, certbotBin, "certonly", "--standalone", "-d", clean,
+			"--non-interactive", "--agree-tos", "--register-unsafely-without-email")
+		out, err := cmd.CombinedOutput()
+		cbCert := filepath.Join("/etc", "letsencrypt", "live", clean, "fullchain.pem")
+		cbKey := filepath.Join("/etc", "letsencrypt", "live", clean, "privkey.pem")
+		if fileExists(cbCert) && fileExists(cbKey) {
+			return &DomainCertResult{
+				CertFile: cbCert,
+				KeyFile:  cbKey,
+				Reused:   false,
+				Message:  "Сертификат успешно выпущен через Certbot!",
+			}, nil
+		}
+		return nil, fmt.Errorf("ошибка выпуска сертификата: %s (убедитесь, что порт 80 свободен)", string(out))
+	}
+
+	if fileExists(destCert) && fileExists(destKey) {
+		return &DomainCertResult{
+			CertFile: destCert,
+			KeyFile:  destKey,
+			Reused:   true,
+			Message:  "Использован существующий сертификат",
+		}, nil
+	}
+
+	return nil, fmt.Errorf("acme.sh или certbot не найдены. Установите certbot (apt install certbot) или запустите пункт 20 в скрипте samarka")
+}
+
+// SetupNginxProxy generates and applies Nginx reverse proxy configuration for the domain.
+func (s *ServerService) SetupNginxProxy(domain string, panelPort int, useHttpsTarget bool) (string, error) {
+	clean := strings.TrimSpace(strings.ToLower(domain))
+	if clean == "" {
+		return "", fmt.Errorf("домен не может быть пустым")
+	}
+	if panelPort <= 0 {
+		panelPort = 2053
+	}
+	nginxBin, err := exec.LookPath("nginx")
+	if err != nil {
+		return "", fmt.Errorf("Nginx не установлен на сервере. Установите: apt update && apt install -y nginx")
+	}
+
+	certFile, keyFile, found := s.FindExistingDomainCert(clean)
+	if !found {
+		return "", fmt.Errorf("сертификат для домена %s не найден. Сначала нажмите «Выпустить SSL»!", clean)
+	}
+
+	targetScheme := "http"
+	sslVerifyDirective := ""
+	if useHttpsTarget {
+		targetScheme = "https"
+		sslVerifyDirective = "        proxy_ssl_verify off;\n"
+	}
+
+	confContent := fmt.Sprintf(`server {
+    listen 80;
+    server_name %s;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name %s;
+
+    ssl_certificate %s;
+    ssl_certificate_key %s;
+    ssl_protocols TLSv1.2 TLSv1.3;
+
+    location / {
+        proxy_pass %s://127.0.0.1:%d;
+%s        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+`, clean, clean, certFile, keyFile, targetScheme, panelPort, sslVerifyDirective)
+
+	_ = os.MkdirAll("/etc/nginx/sites-available", 0755)
+	_ = os.MkdirAll("/etc/nginx/sites-enabled", 0755)
+
+	confPath := filepath.Join("/etc", "nginx", "sites-available", clean)
+	if err := os.WriteFile(confPath, []byte(confContent), 0644); err != nil {
+		return "", fmt.Errorf("не удалось записать файл Nginx: %w", err)
+	}
+
+	enabledPath := filepath.Join("/etc", "nginx", "sites-enabled", clean)
+	_ = os.Remove(enabledPath)
+	if err := os.Symlink(confPath, enabledPath); err != nil {
+		return "", fmt.Errorf("не удалось создать симлинк в sites-enabled: %w", err)
+	}
+
+	testCmd := exec.Command(nginxBin, "-t")
+	if out, err := testCmd.CombinedOutput(); err != nil {
+		_ = os.Remove(enabledPath)
+		return "", fmt.Errorf("ошибка проверки конфига nginx: %s", string(out))
+	}
+
+	reloadCmd := exec.Command("systemctl", "reload", "nginx")
+	if err := reloadCmd.Run(); err != nil {
+		restartCmd := exec.Command("systemctl", "restart", "nginx")
+		_ = restartCmd.Run()
+	}
+
+	return fmt.Sprintf("Nginx успешно настроен! Панель теперь доступна по адресу https://%s/ на стандартном порту 443", clean), nil
+}
