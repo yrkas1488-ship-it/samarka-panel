@@ -262,7 +262,7 @@ export default function AppSidebar() {
                   Панель Самарка
                 </span>
                 <span style={{ fontSize: 11, color: '#a78bfa', fontFamily: 'monospace', fontWeight: 600 }}>
-                  v0.2.2
+                  v0.2.2.1
                 </span>
               </div>
             )}
@@ -327,7 +327,7 @@ export default function AppSidebar() {
                 Панель Самарка
               </span>
               <span style={{ fontSize: 11, color: '#a78bfa', fontFamily: 'monospace', fontWeight: 600 }}>
-                v0.2.2
+                v0.2.2.1
               </span>
             </div>
           </div>

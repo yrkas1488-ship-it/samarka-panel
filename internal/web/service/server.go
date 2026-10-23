@@ -2256,7 +2256,7 @@ func (s *ServerService) CheckDomainDns(domain string) (map[string]any, error) {
 	}
 	status := s.LastStatus()
 	serverIp := ""
-	if status != nil && status.PublicIP != nil {
+	if status != nil {
 		serverIp = status.PublicIP.IPv4
 	}
 	matched := false
@@ -2316,9 +2316,9 @@ func (s *ServerService) IssueDomainCertificate(domain string, force bool) (*Doma
 		defer cancel()
 
 		cmd := exec.CommandContext(ctx, acmeBin, "--issue", "-d", clean, "--standalone", "--httpport", "80", "--force")
-		out, err := cmd.CombinedOutput()
-		if err != nil && !strings.Contains(string(out), "Domains not changed") {
-			logger.Warningf("acme.sh issue: %v, output: %s", err, string(out))
+		out, issueErr := cmd.CombinedOutput()
+		if issueErr != nil && !strings.Contains(string(out), "Domains not changed") {
+			logger.Warningf("acme.sh issue: %v, output: %s", issueErr, string(out))
 		}
 
 		installCmd := exec.CommandContext(ctx, acmeBin, "--installcert", "-d", clean,
@@ -2343,7 +2343,10 @@ func (s *ServerService) IssueDomainCertificate(domain string, force bool) (*Doma
 
 		cmd := exec.CommandContext(ctx, certbotBin, "certonly", "--standalone", "-d", clean,
 			"--non-interactive", "--agree-tos", "--register-unsafely-without-email")
-		out, err := cmd.CombinedOutput()
+		out, cbErr := cmd.CombinedOutput()
+		if cbErr != nil {
+			logger.Warningf("certbot certonly: %v, out: %s", cbErr, string(out))
+		}
 		cbCert := filepath.Join("/etc", "letsencrypt", "live", clean, "fullchain.pem")
 		cbKey := filepath.Join("/etc", "letsencrypt", "live", clean, "privkey.pem")
 		if fileExists(cbCert) && fileExists(cbKey) {
@@ -2376,7 +2379,7 @@ func (s *ServerService) SetupNginxProxy(domain string, panelPort int, useHttpsTa
 		return "", fmt.Errorf("домен не может быть пустым")
 	}
 	if panelPort <= 0 {
-		panelPort, _ = s.settingService.GetWebPort()
+		panelPort, _ = s.settingService.GetPort()
 		if panelPort <= 0 {
 			panelPort = 54321
 		}

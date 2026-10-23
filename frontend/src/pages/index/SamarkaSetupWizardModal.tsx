@@ -252,7 +252,7 @@ server {
         title={
           <Space>
             <RocketOutlined style={{ color: '#8b5cf6', fontSize: 20 }} />
-            <span style={{ fontSize: 18, fontWeight: 700 }}>Мастер настройки Панели Самарка v0.2.2</span>
+            <span style={{ fontSize: 18, fontWeight: 700 }}>Мастер настройки Панели Самарка v0.2.2.1</span>
             <Tag color="purple">Remnawave Edition</Tag>
           </Space>
         }
