@@ -20,8 +20,8 @@
 .nodes-page.is-dark,
 .groups-page.is-dark,
 .api-docs-page.is-dark {
-  --bg-page: #1a1b1f;
-  --bg-card: #23252b;
+  --bg-page: #090a0f;
+  --bg-card: #12141d;
 }
 
 .index-page.is-dark.is-ultra,
@@ -32,8 +32,8 @@
 .nodes-page.is-dark.is-ultra,
 .groups-page.is-dark.is-ultra,
 .api-docs-page.is-dark.is-ultra {
-  --bg-page: #000;
-  --bg-card: #101013;
+  --bg-page: #050608;
+  --bg-card: #0c0e14;
 }
 
 .index-page .ant-layout,
@@ -187,13 +187,13 @@ body.dark .ant-dropdown-menu-item-divider {
 }
 
 .hosts-page.is-dark {
-  --bg-page: #1a1b1f;
-  --bg-card: #23252b;
+  --bg-page: #090a0f;
+  --bg-card: #12141d;
 }
 
 .hosts-page.is-dark.is-ultra {
-  --bg-page: #000;
-  --bg-card: #101013;
+  --bg-page: #050608;
+  --bg-card: #0c0e14;
 }
 
 .hosts-page .ant-layout,

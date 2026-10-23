@@ -31,7 +31,7 @@ function RouteErrorBoundary() {
             key="refresh"
             type="primary"
             onClick={() => window.location.reload()}
-            style={{ background: '#f59e0b', borderColor: '#f59e0b', color: '#0f172a', fontWeight: 600 }}
+            style={{ background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)', borderColor: '#8b5cf6', color: '#ffffff', fontWeight: 600 }}
           >
             Перезагрузить страницу
           </Button>,

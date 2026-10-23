@@ -164,7 +164,7 @@ export default function SuperMasterModal({ open, onClose, onAddSubordinate }: Su
       key: 'name',
       render: (val: string, record: NodeRecord) => (
         <Space>
-          <CloudServerOutlined style={{ color: '#f59e0b' }} />
+          <CloudServerOutlined style={{ color: '#8b5cf6' }} />
           <Text strong style={{ color: '#f8fafc' }}>{val}</Text>
           <Text type="secondary" style={{ fontSize: 12 }}>({record.address}:{record.port})</Text>
         </Space>
@@ -212,7 +212,7 @@ export default function SuperMasterModal({ open, onClose, onAddSubordinate }: Su
       width={780}
       title={
         <Space>
-          <CrownOutlined style={{ color: '#f59e0b', fontSize: 20 }} />
+          <CrownOutlined style={{ color: '#8b5cf6', fontSize: 20 }} />
           <span style={{ fontWeight: 700 }}>Управление кластером Samarka (Глав-Главный / Главный сервер)</span>
         </Space>
       }
@@ -224,14 +224,14 @@ export default function SuperMasterModal({ open, onClose, onAddSubordinate }: Su
             key: 'super_master',
             label: (
               <Space>
-                <CrownOutlined style={{ color: '#f59e0b' }} />
+                <CrownOutlined style={{ color: '#8b5cf6' }} />
                 <span>👑 Режим Глав-Главного сервера</span>
               </Space>
             ),
             children: (
               <>
                 <Alert
-                  type="warning"
+                  type="info"
                   showIcon
                   message="Центральный пульт управления кластером (Super-Master)"
                   description="Глав-Главный сервер позволяет централизованно видеть, контролировать и координировать все остальные серверы в единой защищенной панели."
@@ -245,7 +245,7 @@ export default function SuperMasterModal({ open, onClose, onAddSubordinate }: Su
                     </Text>
                     <div style={{ display: 'flex', gap: 8 }}>
                       <Input
-                        placeholder="samarka://join?address=1.2.3.4&port=2053&token=... или https://ip:port"
+                        placeholder="samarka://join?address=1.2.3.4&port=443&token=... или https://ip:port"
                         value={subordinateLink}
                         onChange={(e) => setSubordinateLink(e.target.value)}
                         onPressEnter={handleAddDirect}
@@ -256,13 +256,13 @@ export default function SuperMasterModal({ open, onClose, onAddSubordinate }: Su
                         icon={<ThunderboltOutlined />}
                         loading={connecting}
                         onClick={handleAddDirect}
-                        style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', borderColor: '#f59e0b', color: '#0f172a', fontWeight: 600 }}
+                        style={{ background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)', borderColor: '#8b5cf6', color: '#ffffff', fontWeight: 600 }}
                       >
                         Привязать к Главному
                       </Button>
                     </div>
                     {testStatus && (
-                      <div style={{ fontSize: 12, color: testStatus.startsWith('Ошибка') ? '#ff4d4f' : '#f59e0b' }}>
+                      <div style={{ fontSize: 12, color: testStatus.startsWith('Ошибка') ? '#ff4d4f' : '#a78bfa' }}>
                         {testStatus}
                       </div>
                     )}

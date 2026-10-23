@@ -86,7 +86,7 @@ export default function SamarkaSetupWizardModal({ open, onClose, onInboundsChang
   };
 
   const currentHost = window.location.hostname;
-  const currentPort = window.location.port || (window.location.protocol === 'https:' ? '443' : '2053');
+  const currentPort = window.location.port || (window.location.protocol === 'https:' ? '443' : '80');
   const basePath = window.X_UI_BASE_PATH || '/';
   const scheme = window.location.protocol.replace(':', '');
   const myJoinLink = `samarka://join?address=${currentHost}&port=${currentPort}&basePath=${basePath}&scheme=${scheme}${clusterToken ? `&token=${clusterToken}` : ''}&role=${role}`;
@@ -182,7 +182,7 @@ export default function SamarkaSetupWizardModal({ open, onClose, onInboundsChang
       }
       const params = parsedUrl.searchParams;
       const addr = params.get('address') || (parsedUrl.hostname !== 'samarka.local' ? parsedUrl.hostname : '');
-      const port = Number(params.get('port') || parsedUrl.port) || 2053;
+      const port = Number(params.get('port') || parsedUrl.port) || 443;
       const token = params.get('token') || params.get('apiToken') || '';
       const bPath = params.get('basePath') || parsedUrl.pathname || '/';
       const sScheme = (params.get('scheme') || (parsedUrl.protocol ? parsedUrl.protocol.replace(':', '') : 'https')) as 'http' | 'https';
@@ -251,9 +251,9 @@ server {
         width={800}
         title={
           <Space>
-            <RocketOutlined style={{ color: '#f59e0b', fontSize: 20 }} />
-            <span style={{ fontSize: 18, fontWeight: 700 }}>Мастер настройки Панели Самарка v0.2.1.1</span>
-            <Tag color="gold">Веб-конфигуратор</Tag>
+            <RocketOutlined style={{ color: '#8b5cf6', fontSize: 20 }} />
+            <span style={{ fontSize: 18, fontWeight: 700 }}>Мастер настройки Панели Самарка v0.2.2</span>
+            <Tag color="purple">Remnawave Edition</Tag>
           </Space>
         }
         footer={[
@@ -265,7 +265,7 @@ server {
             type="primary"
             icon={<CheckOutlined />}
             onClick={handleSave}
-            style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', borderColor: '#f59e0b', color: '#0f172a', fontWeight: 600 }}
+            style={{ background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)', borderColor: '#8b5cf6', color: '#ffffff', fontWeight: 600 }}
           >
             Сохранить настройки роли
           </Button>,
@@ -275,7 +275,7 @@ server {
           type="info"
           showIcon
           message="Настройка роли сервера и CDN архитектуры"
-          description="Выберите назначение этого сервера в вашей сети. Все порты и протоколы преднастроены: порт панели 2053, прямые подключения 8443, CDN-подключения строго 443."
+          description={`Выберите назначение этого сервера в вашей сети. Порты и протоколы преднастроены: порт веб-панели ${currentPort}, прямые подключения 8443, CDN-подключения строго 443.`}
           style={{ marginBottom: 16 }}
         />
 
@@ -295,8 +295,9 @@ server {
                   size="small"
                   onClick={() => setRole('master')}
                   style={{
-                    borderColor: role === 'master' ? '#f59e0b' : undefined,
-                    background: role === 'master' ? 'rgba(245, 158, 11, 0.08)' : undefined,
+                    borderColor: role === 'master' ? '#8b5cf6' : undefined,
+                    background: role === 'master' ? 'rgba(139, 92, 246, 0.12)' : undefined,
+                    boxShadow: role === 'master' ? '0 0 15px rgba(139, 92, 246, 0.25)' : undefined,
                     height: '100%',
                   }}
                 >
@@ -314,8 +315,9 @@ server {
                   size="small"
                   onClick={() => setRole('worker')}
                   style={{
-                    borderColor: role === 'worker' ? '#f59e0b' : undefined,
-                    background: role === 'worker' ? 'rgba(245, 158, 11, 0.08)' : undefined,
+                    borderColor: role === 'worker' ? '#8b5cf6' : undefined,
+                    background: role === 'worker' ? 'rgba(139, 92, 246, 0.12)' : undefined,
+                    boxShadow: role === 'worker' ? '0 0 15px rgba(139, 92, 246, 0.25)' : undefined,
                     height: '100%',
                   }}
                 >
@@ -333,8 +335,9 @@ server {
                   size="small"
                   onClick={() => setRole('super_master')}
                   style={{
-                    borderColor: role === 'super_master' ? '#f59e0b' : undefined,
-                    background: role === 'super_master' ? 'rgba(245, 158, 11, 0.08)' : undefined,
+                    borderColor: role === 'super_master' ? '#8b5cf6' : undefined,
+                    background: role === 'super_master' ? 'rgba(139, 92, 246, 0.12)' : undefined,
+                    boxShadow: role === 'super_master' ? '0 0 15px rgba(139, 92, 246, 0.25)' : undefined,
                     height: '100%',
                   }}
                 >
@@ -353,8 +356,8 @@ server {
         <Divider style={{ margin: '16px 0' }} />
 
         {role === 'master' && (
-          <Card size="small" style={{ background: 'rgba(245, 158, 11, 0.03)', borderColor: 'rgba(245, 158, 11, 0.2)' }}>
-            <Title level={5} style={{ margin: 0, color: '#f59e0b' }}>
+          <Card size="small" style={{ background: 'rgba(139, 92, 246, 0.05)', borderColor: 'rgba(139, 92, 246, 0.25)' }}>
+            <Title level={5} style={{ margin: 0, color: '#a78bfa' }}>
               <Space>
                 <CrownOutlined />
                 <span>Параметры Главного сервера (Master)</span>
@@ -374,7 +377,7 @@ server {
             </div>
             <div style={{ marginTop: 12 }}>
               <Text type="secondary" style={{ fontSize: 12 }}>
-                💡 Дефолтные порты: панель доступна по <b>2053</b>, прямые подключения Reality gRPC / TCP настраиваются на <b>8443</b> с масками <code>максвайб.рф</code> и <code>nemaxvibe.lol</code>.
+                💡 Порты и протоколы: панель доступна по <b>{currentPort}</b>, прямые подключения Reality gRPC / TCP настраиваются на <b>8443</b> с масками <code>максвайб.рф</code> и <code>nemaxvibe.lol</code>.
               </Text>
             </div>
           </Card>
@@ -469,7 +472,7 @@ server {
               <Text strong>3. Вставьте ссылку от Главного сервера для привязки:</Text>
               <div style={{ display: 'flex', gap: 8, marginTop: 6 }}>
                 <Input
-                  placeholder="samarka://join?address=...&port=2053&token=..."
+                  placeholder="samarka://join?address=...&port=443&token=..."
                   value={masterLink}
                   onChange={(e) => setMasterLink(e.target.value)}
                 />
@@ -487,8 +490,8 @@ server {
         )}
 
         {role === 'super_master' && (
-          <Card size="small" style={{ background: 'rgba(245, 158, 11, 0.04)', borderColor: 'rgba(245, 158, 11, 0.3)' }}>
-            <Title level={5} style={{ margin: 0, color: '#f59e0b' }}>
+          <Card size="small" style={{ background: 'rgba(139, 92, 246, 0.05)', borderColor: 'rgba(139, 92, 246, 0.3)' }}>
+            <Title level={5} style={{ margin: 0, color: '#a78bfa' }}>
               <CrownOutlined /> Глав-Главный диспетчерский пульт (Super-Master)
             </Title>
             <Paragraph style={{ marginTop: 8, fontSize: 13 }}>
@@ -499,7 +502,7 @@ server {
                 type="primary"
                 icon={<CrownOutlined />}
                 onClick={() => setSuperMasterModalOpen(true)}
-                style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', borderColor: '#f59e0b', color: '#0f172a', fontWeight: 600 }}
+                style={{ background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)', borderColor: '#8b5cf6', color: '#ffffff', fontWeight: 600 }}
               >
                 Открыть пульт управления кластером
               </Button>

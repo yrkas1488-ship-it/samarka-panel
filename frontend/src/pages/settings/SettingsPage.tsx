@@ -287,7 +287,7 @@ export default function SettingsPage() {
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
                           <span style={{ fontSize: 13, color: '#94a3b8', fontWeight: 500 }}>Дополнительные разделы:</span>
                           <Space wrap>
-                            <Button size="small" icon={<GlobalOutlined style={{ color: '#f59e0b' }} />} onClick={() => { window.location.hash = '#domain'; }}>
+                            <Button size="small" icon={<GlobalOutlined style={{ color: '#8b5cf6' }} />} onClick={() => { window.location.hash = '#domain'; }}>
                               🌐 Привязка домена
                             </Button>
                             <Button size="small" icon={<TagsOutlined />} onClick={() => navigate('/groups')}>

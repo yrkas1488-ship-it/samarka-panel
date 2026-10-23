@@ -216,17 +216,17 @@ server {
       size="small"
       title={
         <Space>
-          <GlobalOutlined style={{ color: '#f59e0b' }} />
+          <GlobalOutlined style={{ color: '#8b5cf6' }} />
           <span style={{ fontWeight: 600 }}>Привязка домена и SSL к панели Samarka (в 1 клик на сайте)</span>
         </Space>
       }
-      style={{ marginBottom: 16, borderColor: 'rgba(245, 158, 11, 0.35)', borderRadius: 10 }}
+      style={{ marginBottom: 16, borderColor: 'rgba(139, 92, 246, 0.35)', borderRadius: 12 }}
     >
       <Alert
         type="info"
         showIcon
         message="Автоматическая привязка без терминала"
-        description="Теперь привязать домен, выпустить SSL и настроить вход без порта :2053 можно прямо здесь, не вводя команды в консоли сервера."
+        description="Привязать домен, выпустить SSL и настроить чистый вход на стандартный порт 443 можно прямо здесь, не вводя команды в консоли сервера."
         style={{ marginBottom: 16 }}
       />
 
@@ -246,7 +246,7 @@ server {
             href="https://dash.cloudflare.com/"
             target="_blank"
             rel="noopener noreferrer"
-            style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', borderColor: '#f59e0b', color: '#0f172a', fontWeight: 600 }}
+            style={{ background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)', borderColor: '#8b5cf6', color: '#ffffff', fontWeight: 600 }}
           >
             Cloudflare DNS ↗
           </Button>
@@ -388,10 +388,10 @@ server {
           />
 
           {finalUrl && (
-            <div style={{ marginTop: 18, background: 'rgba(245, 158, 11, 0.08)', border: '1px solid rgba(245, 158, 11, 0.3)', borderRadius: 10, padding: 14 }}>
+            <div style={{ marginTop: 18, background: 'rgba(139, 92, 246, 0.08)', border: '1px solid rgba(139, 92, 246, 0.3)', borderRadius: 12, padding: 14 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
                 <div>
-                  <Text strong style={{ fontSize: 13, color: '#f59e0b' }}>
+                  <Text strong style={{ fontSize: 13, color: '#a78bfa' }}>
                     ГОТОВАЯ ССЫЛКА ДЛЯ ВХОДА В ПАНЕЛЬ:
                   </Text>
                   <div style={{ fontSize: 15, fontWeight: 700, marginTop: 4, wordBreak: 'break-all' }}>
@@ -415,7 +415,7 @@ server {
                     href={finalUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ background: '#f59e0b', borderColor: '#f59e0b', color: '#0f172a', fontWeight: 600 }}
+                    style={{ background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)', borderColor: '#8b5cf6', color: '#ffffff', fontWeight: 600 }}
                   >
                     Открыть в новой вкладке ↗
                   </Button>

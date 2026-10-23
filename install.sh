@@ -1173,13 +1173,14 @@ EOF
                     config_port="${XUI_PANEL_PORT}"
                     echo -e "${yellow}Порт панели: ${config_port}${plain}"
                 else
-                    config_port="2053"
-                    echo -e "${yellow}Дефолтный порт панели Samarka: 2053${plain}"
+                    config_port=$(shuf -i 20000-60000 -n 1 2>/dev/null || awk 'BEGIN{srand(); print int(rand()*(60000-20000))+20000}')
+                    echo -e "${green}Сгенерирован безопасный случайный порт панели: ${config_port}${plain}"
                 fi
             else
-                read -rp "Введите порт панели [2053]: " config_port
-                config_port="${config_port:-2053}"
-                echo -e "${yellow}Порт панели: ${config_port}${plain}"
+                local auto_random_port=$(shuf -i 20000-60000 -n 1 2>/dev/null || awk 'BEGIN{srand(); print int(rand()*(60000-20000))+20000}')
+                read -rp "Введите порт панели [случайный $auto_random_port]: " config_port
+                config_port="${config_port:-$auto_random_port}"
+                echo -e "${green}Выбран порт панели: ${config_port}${plain}"
             fi
 
             ${xui_folder}/x-ui setting -username "${config_username}" -password "${config_password}" -port "${config_port}" -webBasePath "${config_webBasePath}"
@@ -1352,11 +1353,11 @@ install_x-ui() {
     local samarka_repo="${SAMARKA_REPO:-"yrkas1488-ship-it/samarka-panel"}"
 
     if [[ "$1" == "local" ]]; then
-        echo -e "${green}Установка Samarka v0.2.1.1 из локальных файлов...${plain}"
+        echo -e "${green}Установка Samarka v0.2.2 из локальных файлов...${plain}"
         mkdir -p "${xui_folder}"
         cp -rf "${cur_dir}"/* "${xui_folder}/"
         cd "${xui_folder}"
-        tag_version="0.2.1.1"
+        tag_version="0.2.2"
     else
         # Download resources
         if [ $# == 0 ]; then

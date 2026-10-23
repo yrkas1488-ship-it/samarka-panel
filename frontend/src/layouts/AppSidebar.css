@@ -104,16 +104,9 @@
 }
 
 .sidebar-theme-cycle {
-  background: rgba(245, 158, 11, 0.12);
-  border: 1px solid rgba(245, 158, 11, 0.28);
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: #f59e0b;
+  background: rgba(139, 92, 246, 0.12);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  color: #a78bfa;
   padding: 0;
   flex-shrink: 0;
   transition: all 0.2s ease;
@@ -121,9 +114,9 @@
 
 .sidebar-theme-cycle:hover,
 .sidebar-theme-cycle:focus-visible {
-  background: rgba(245, 158, 11, 0.28);
-  border-color: #f59e0b;
-  color: #fbbf24;
+  background: rgba(139, 92, 246, 0.25);
+  border-color: #8b5cf6;
+  color: #c4b5fd;
   transform: scale(1.1);
   outline: none;
 }
@@ -351,7 +344,92 @@ body.dark .ant-drawer-body .drawer-menu .ant-menu-item-group-list {
   display: inline-block;
 }
 
-/* Selected item styling - The Amber Pill from the mockup */
+/* Selected item styling - Remnawave Violet Glow Pill */
+body.dark .sider-nav .ant-menu-item-selected,
+body.dark .sider-utility .ant-menu-item-selected,
+body.dark .drawer-menu .ant-menu-item-selected,
+html[data-theme="ultra-dark"] body.dark .sider-nav .ant-menu-item-selected {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.22) 0%, rgba(99, 102, 241, 0.16) 100%) !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  border-radius: 12px !important;
+  border: 1px solid rgba(139, 92, 246, 0.35) !important;
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.22) !important;
+}
+
+body.dark .sider-nav .ant-menu-item-selected .anticon,
+body.dark .sider-utility .ant-menu-item-selected .anticon,
+body.dark .drawer-menu .ant-menu-item-selected .anticon {
+  color: #c4b5fd !important;
+}
+
+/* Inactive menu items */
+body.dark .sider-nav .ant-menu-item,
+body.dark .sider-utility .ant-menu-item,
+body.dark .drawer-menu .ant-menu-item {
+  color: #cbd5e1;
+  border-radius: 12px;
+  margin: 3px 8px;
+  transition: all 0.2s ease;
+}
+
+body.dark .sider-nav .ant-menu-item:hover,
+body.dark .sider-utility .ant-menu-item:hover,
+body.dark .drawer-menu .ant-menu-item:hover {
+  background-color: rgba(139, 92, 246, 0.12) !important;
+  color: #c4b5fd !important;
+}
+
+body.dark .sider-nav .ant-menu-item:hover .anticon,
+body.dark .sider-utility .ant-menu-item:hover .anticon,
+body.dark .drawer-menu .ant-menu-item:hover .anticon {
+  color: #c4b5fd !important;
+}
+
+/* Right floating menus, dropdowns, and submenus */
+.ant-menu-submenu-popup .ant-menu,
+.ant-dropdown-menu {
+  background: #12141d !important;
+  border: 1px solid rgba(139, 92, 246, 0.25) !important;
+  border-radius: 12px !important;
+  padding: 6px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6) !important;
+}
+
+html[data-theme="ultra-dark"] .ant-menu-submenu-popup .ant-menu,
+html[data-theme="ultra-dark"] .ant-dropdown-menu {
+  background: #0c0e14 !important;
+}
+
+body.light .ant-menu-submenu-popup .ant-menu,
+body.light .ant-dropdown-menu {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+
+.ant-menu-submenu-popup .ant-menu-item-selected,
+.ant-dropdown-menu .ant-dropdown-menu-item-selected,
+.ant-menu-sub .ant-menu-item-selected {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%) !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  border-radius: 8px !important;
+}
+
+.ant-menu-submenu-popup .ant-menu-item-selected .anticon,
+.ant-dropdown-menu .ant-dropdown-menu-item-selected .anticon,
+.ant-menu-sub .ant-menu-item-selected .anticon {
+  color: #ffffff !important;
+}
+
+.ant-menu-submenu-popup .ant-menu-item:hover,
+.ant-dropdown-menu .ant-dropdown-menu-item:hover,
+.ant-dropdown-menu-item:hover,
+.ant-menu-sub .ant-menu-item:hover {
+  background-color: rgba(139, 92, 246, 0.15) !important;
+  color: #c4b5fd !important;
+  border-radius: 8px !important;
+}
 body.dark .sider-nav .ant-menu-item-selected,
 body.dark .sider-utility .ant-menu-item-selected,
 body.dark .drawer-menu .ant-menu-item-selected,

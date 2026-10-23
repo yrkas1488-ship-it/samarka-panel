@@ -2376,7 +2376,10 @@ func (s *ServerService) SetupNginxProxy(domain string, panelPort int, useHttpsTa
 		return "", fmt.Errorf("домен не может быть пустым")
 	}
 	if panelPort <= 0 {
-		panelPort = 2053
+		panelPort, _ = s.settingService.GetWebPort()
+		if panelPort <= 0 {
+			panelPort = 54321
+		}
 	}
 	nginxBin, err := exec.LookPath("nginx")
 	if err != nil {

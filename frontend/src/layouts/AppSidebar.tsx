@@ -261,8 +261,8 @@ export default function AppSidebar() {
                 <span className="brand-text" style={{ fontSize: 15, fontWeight: 700, color: isDark ? '#f8fafc' : '#0f172a', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>
                   Панель Самарка
                 </span>
-                <span style={{ fontSize: 11, color: '#f59e0b', fontFamily: 'monospace', fontWeight: 600 }}>
-                  v0.2.1.1
+                <span style={{ fontSize: 11, color: '#a78bfa', fontFamily: 'monospace', fontWeight: 600 }}>
+                  v0.2.2
                 </span>
               </div>
             )}
@@ -326,8 +326,8 @@ export default function AppSidebar() {
               <span className="drawer-brand" style={{ fontSize: 15, fontWeight: 700, color: isDark ? '#f8fafc' : '#0f172a', whiteSpace: 'nowrap' }}>
                 Панель Самарка
               </span>
-              <span style={{ fontSize: 11, color: '#f59e0b', fontFamily: 'monospace', fontWeight: 600 }}>
-                v0.2.1.1
+              <span style={{ fontSize: 11, color: '#a78bfa', fontFamily: 'monospace', fontWeight: 600 }}>
+                v0.2.2
               </span>
             </div>
           </div>

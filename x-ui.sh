@@ -201,7 +201,7 @@ update_menu() {
 }
 
 legacy_version() {
-    echo -n "Enter the panel version (like 0.2.1.1):"
+    echo -n "Enter the panel version (like 0.2.2):"
     read -r tag_version
 
     if [ -z "$tag_version" ]; then
@@ -1062,7 +1062,10 @@ install_firewall() {
         ufw allow ssh
         ufw allow http
         ufw allow https
-        ufw allow 2053/tcp #webPort
+        local current_web_port=$(${xui_folder}/x-ui setting -show 2>/dev/null | grep -i 'port:' | awk '{print $2}' | tr -dc '0-9')
+        if [[ -n "$current_web_port" ]]; then
+            ufw allow "${current_web_port}/tcp" #webPort
+        fi
         ufw allow 2096/tcp #subport
 
         # Enable the firewall
@@ -3212,7 +3215,7 @@ show_usage() {
 show_menu() {
     echo -e "
 ╔────────────────────────────────────────────────╗
-│  ${green}Samarka Panel Management Script (v0.2.1.1)${plain}   │
+│  ${green}Samarka Panel Management Script (v0.2.2)${plain}   │
 │  ${green}0.${plain} Exit Script                               │
 │────────────────────────────────────────────────│
 │  ${green}1.${plain} Install                                   │

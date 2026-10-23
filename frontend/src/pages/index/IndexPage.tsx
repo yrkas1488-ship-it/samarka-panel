@@ -498,7 +498,7 @@ export default function IndexPage() {
                 <Button
                   type="text"
                   size="small"
-                  icon={hideHostIp ? <EyeInvisibleOutlined style={{ color: '#f59e0b', fontSize: 13 }} /> : <EyeOutlined style={{ color: isDark ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.45)', fontSize: 13 }} />}
+                  icon={hideHostIp ? <EyeInvisibleOutlined style={{ color: '#8b5cf6', fontSize: 13 }} /> : <EyeOutlined style={{ color: isDark ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.45)', fontSize: 13 }} />}
                   style={{ padding: '0 4px', height: 'auto', marginLeft: 4 }}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -542,19 +542,19 @@ export default function IndexPage() {
               </div>
             </div>
 
-            {/* 2. TOP BANNER CARD - Samarka Panel v0.2.1.1 with Bilingual Description */}
+            {/* 2. TOP BANNER CARD - Samarka Panel v0.2.2 with Bilingual Description */}
             <div className="samarka-banner-card">
               <div className="samarka-banner-content">
                 <Space align="start" size={14} style={{ flex: 1, minWidth: 280 }}>
                   <div className="samarka-banner-icon">
-                    <RocketOutlined style={{ fontSize: 28, color: '#f59e0b' }} />
+                    <RocketOutlined style={{ fontSize: 28, color: '#8b5cf6' }} />
                   </div>
                   <div>
                     <div className="samarka-banner-title">
-                      🦊 Панель Самарка v0.2.1.1 · Samarka Xray Panel
+                      🦊 Панель Самарка v0.2.2 · Samarka Xray Panel
                     </div>
                     <div className="samarka-banner-subtitle">
-                      Роль узла / Node role: <span className="samarka-role-text">{roleLabel}</span> | Веб-порт / Web port: <b className="samarka-amber-bold">2053</b> | Протоколы / Protocols: <b className="samarka-amber-bold">Reality 8443</b> / CDN <b className="samarka-amber-bold">443</b>
+                      Роль узла / Node role: <span className="samarka-role-text">{roleLabel}</span> | Веб-порт / Web port: <b className="samarka-amber-bold">{window.location.port || (window.location.protocol === 'https:' ? '443' : '80')}</b> | Протоколы / Protocols: <b className="samarka-amber-bold">Reality 8443</b> / CDN <b className="samarka-amber-bold">443</b>
                     </div>
 
                     <div className="samarka-banner-bilingual-desc">
@@ -574,7 +574,7 @@ export default function IndexPage() {
                   {isSuperMaster && (
                     <Button
                       type="default"
-                      icon={<CrownOutlined style={{ color: '#f59e0b' }} />}
+                      icon={<CrownOutlined style={{ color: '#8b5cf6' }} />}
                       onClick={() => setSuperMasterOpen(true)}
                       className="samarka-supermaster-btn"
                     >
