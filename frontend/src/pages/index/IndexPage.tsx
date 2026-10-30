@@ -542,7 +542,7 @@ export default function IndexPage() {
               </div>
             </div>
 
-            {/* 2. TOP BANNER CARD - Samarka Panel v0.2.2.1 with Bilingual Description */}
+            {/* 2. TOP BANNER CARD - Samarka Panel v0.2.2.2 with Bilingual Description */}
             <div className="samarka-banner-card">
               <div className="samarka-banner-content">
                 <Space align="start" size={14} style={{ flex: 1, minWidth: 280 }}>
@@ -551,7 +551,7 @@ export default function IndexPage() {
                   </div>
                   <div>
                     <div className="samarka-banner-title">
-                      🦊 Панель Самарка v0.2.2.1 · Samarka Xray Panel
+                      🦊 Панель Самарка v0.2.2.2 · Samarka Xray Panel
                     </div>
                     <div className="samarka-banner-subtitle">
                       Роль узла / Node role: <span className="samarka-role-text">{roleLabel}</span> | Веб-порт / Web port: <b className="samarka-amber-bold">{window.location.port || (window.location.protocol === 'https:' ? '443' : '80')}</b> | Протоколы / Protocols: <b className="samarka-amber-bold">Reality 8443</b> / CDN <b className="samarka-amber-bold">443</b>

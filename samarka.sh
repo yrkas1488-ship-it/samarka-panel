@@ -141,18 +141,53 @@ install() {
 }
 
 update() {
-    confirm "This function will update all Samarka components to the latest version, and the data will not be lost. Do you want to continue?" "y"
+    echo -e "
+╔────────────────────────────────────────────────╗
+│       ${green}Выбор канала обновления Samarka${plain}          │
+│────────────────────────────────────────────────│
+│  ${green}1.${plain} Стабильная версия (Stable)                 │
+│  ${green}2.${plain} Бета-версия с маскировкой (Beta Stealth)   │
+│  ${green}0.${plain} Назад в главное меню                       │
+╚────────────────────────────────────────────────╝"
+    echo && read -rp "Выберите канал обновления [0-2]: " channel_choice
+
+    local update_tag=""
+    case "${channel_choice}" in
+        0)
+            before_show_menu
+            return 0
+            ;;
+        1)
+            echo -e "${green}Выбран канал: Стабильный (Stable)${plain}"
+            update_tag=""
+            ;;
+        2)
+            echo -e "${yellow}Выбран канал: Бета с маскировкой (Beta Stealth)${plain}"
+            update_tag="stealth-beta"
+            ;;
+        *)
+            echo -e "${red}Неверный ввод, возврат в меню.${plain}"
+            before_show_menu
+            return 1
+            ;;
+    esac
+
+    confirm "Выполнить обновление Samarka? Все настройки, клиенты и базы данных сохранятся." "y"
     if [[ $? != 0 ]]; then
-        LOGE "Cancelled"
+        LOGE "Обновление отменено"
         if [[ $# == 0 ]]; then
             before_show_menu
         fi
         return 0
     fi
     local repo="${SAMARKA_REPO:-"yrkas1488-ship-it/samarka-panel"}"
-    bash <(curl -Ls https://raw.githubusercontent.com/${repo}/main/update.sh)
+    if [[ -n "${update_tag}" ]]; then
+        XUI_UPDATE_TAG="${update_tag}" bash <(curl -Ls https://raw.githubusercontent.com/${repo}/main/update.sh)
+    else
+        bash <(curl -Ls https://raw.githubusercontent.com/${repo}/main/update.sh)
+    fi
     if [[ $? == 0 ]]; then
-        LOGI "Update is complete, Panel has automatically restarted "
+        LOGI "Обновление успешно завершено! Панель автоматически перезапущена."
         before_show_menu
     fi
 }
@@ -201,7 +236,7 @@ update_menu() {
 }
 
 legacy_version() {
-    echo -n "Enter the panel version (like 0.2.2.1):"
+    echo -n "Enter the panel version (like 0.2.2.2):"
     read -r tag_version
 
     if [ -z "$tag_version" ]; then
@@ -3215,7 +3250,7 @@ show_usage() {
 show_menu() {
     echo -e "
 ╔────────────────────────────────────────────────╗
-│  ${green}Samarka Panel Management Script (v0.2.2.1)${plain}   │
+│  ${green}Samarka Panel Management Script (v0.2.2.2)${plain}   │
 │  ${green}0.${plain} Exit Script                               │
 │────────────────────────────────────────────────│
 │  ${green}1.${plain} Install                                   │
