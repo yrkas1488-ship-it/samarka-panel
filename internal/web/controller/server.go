@@ -84,6 +84,8 @@ func (a *ServerController) initRouter(g *gin.RouterGroup) {
 	g.POST("/domain/issueCert", a.issueDomainCert)
 	g.POST("/domain/setupNginx", a.setupNginxProxy)
 	g.POST("/domain/cleanBasePath", a.cleanBasePath)
+	g.POST("/domain/generateDecoy", a.generateDecoy)
+	g.GET("/domain/decoyStatus", a.getDecoyStatus)
 }
 
 // startTask registers the @2s ticker that refreshes server status, samples
@@ -565,25 +567,35 @@ func (a *ServerController) setupNginxProxy(c *gin.Context) {
 	domain := c.PostForm("domain")
 	portStr := c.PostForm("panelPort")
 	port, _ := strconv.Atoi(portStr)
+	enableStealth := c.PostForm("enableStealth") == "true"
+	secretBasePath := c.PostForm("secretBasePath")
+
 	if domain == "" {
 		var req struct {
-			Domain    string `json:"domain"`
-			PanelPort int    `json:"panelPort"`
+			Domain         string `json:"domain"`
+			PanelPort      int    `json:"panelPort"`
+			EnableStealth  bool   `json:"enableStealth"`
+			SecretBasePath string `json:"secretBasePath"`
 		}
 		if err := c.ShouldBindJSON(&req); err == nil {
 			domain = req.Domain
 			port = req.PanelPort
+			enableStealth = req.EnableStealth
+			secretBasePath = req.SecretBasePath
 		}
 	}
 	if port <= 0 {
 		port, _ = a.settingService.GetPort()
 		if port <= 0 {
-			port = 2053
+			port = 54321
 		}
+	}
+	if secretBasePath == "" {
+		secretBasePath, _ = a.settingService.GetBasePath()
 	}
 	certFile, _ := a.settingService.GetCertFile()
 	useHttps := certFile != ""
-	msg, err := a.serverService.SetupNginxProxy(domain, port, useHttps)
+	msg, err := a.serverService.SetupNginxProxy(domain, port, useHttps, enableStealth, secretBasePath)
 	if err != nil {
 		jsonMsg(c, err.Error(), err)
 		return
@@ -600,3 +612,19 @@ func (a *ServerController) cleanBasePath(c *gin.Context) {
 	jsonMsg(c, "Секретный ключ успешно сброшен на корень (/)", nil)
 }
 
+
+func (a *ServerController) generateDecoy(c *gin.Context) {
+	decoySvc := &service.DecoyService{}
+	info, err := decoySvc.GenerateUniqueDecoy("/var/www/decoy")
+	if err != nil {
+		jsonMsg(c, err.Error(), err)
+		return
+	}
+	jsonObj(c, info, nil)
+}
+
+func (a *ServerController) getDecoyStatus(c *gin.Context) {
+	decoySvc := &service.DecoyService{}
+	info := decoySvc.GetDecoyStatus("/var/www/decoy")
+	jsonObj(c, info, nil)
+}

@@ -897,6 +897,22 @@ update_x-ui() {
 
     echo -e "${green}Downloading new version...${plain}"
 
+    # If no tag specified and interactive terminal is attached, allow selecting release channel
+    if [[ -z "${XUI_UPDATE_TAG}" && -c /dev/tty ]]; then
+        echo -e "
+╔────────────────────────────────────────────────╗
+│       ${green}Выбор канала обновления Samarka${plain}          │
+│────────────────────────────────────────────────│
+│  ${green}1.${plain} Стабильная версия (Stable)                 │
+│  ${green}2.${plain} Бета-версия с маскировкой (Beta Stealth)   │
+╚────────────────────────────────────────────────╝"
+        local ch_choice=""
+        read -rp "Выберите канал обновления [1-2, по умолчанию 1]: " ch_choice </dev/tty || true
+        if [[ "${ch_choice}" == "2" ]]; then
+            XUI_UPDATE_TAG="stealth-beta"
+        fi
+    fi
+
     # XUI_UPDATE_TAG lets the panel target a specific release tag (e.g. the
     # rolling dev-latest pre-release). Empty keeps the default latest-stable flow.
     if [[ -n "${XUI_UPDATE_TAG}" ]]; then
@@ -995,6 +1011,7 @@ update_x-ui() {
     ${curl_bin} -fLRo /usr/bin/samarka https://raw.githubusercontent.com/${samarka_repo}/main/samarka.sh 2>/dev/null || \
     ${curl_bin} -fLRo /usr/bin/samarka https://raw.githubusercontent.com/${samarka_repo}/main/x-ui.sh > /dev/null 2>&1
     rm -f /usr/bin/x-ui
+    ln -sf /usr/bin/samarka /usr/bin/x-ui 2>/dev/null
     if [[ $? -ne 0 ]]; then
         _fail "ERROR: Failed to download script, please be sure that your server can access GitHub"
     fi

@@ -2373,7 +2373,7 @@ func (s *ServerService) IssueDomainCertificate(domain string, force bool) (*Doma
 }
 
 // SetupNginxProxy generates and applies Nginx reverse proxy configuration for the domain.
-func (s *ServerService) SetupNginxProxy(domain string, panelPort int, useHttpsTarget bool) (string, error) {
+func (s *ServerService) SetupNginxProxy(domain string, panelPort int, useHttpsTarget bool, enableStealth bool, secretBasePath string) (string, error) {
 	clean := strings.TrimSpace(strings.ToLower(domain))
 	if clean == "" {
 		return "", fmt.Errorf("домен не может быть пустым")
@@ -2398,10 +2398,68 @@ func (s *ServerService) SetupNginxProxy(domain string, panelPort int, useHttpsTa
 	sslVerifyDirective := ""
 	if useHttpsTarget {
 		targetScheme = "https"
-		sslVerifyDirective = "        proxy_ssl_verify off;\n"
+		sslVerifyDirective = "        proxy_ssl_verify off;
+"
 	}
 
-	confContent := fmt.Sprintf(`server {
+	cleanPath := strings.TrimSpace(secretBasePath)
+	if cleanPath == "" || cleanPath == "/" {
+		cleanPath = "/"
+	} else {
+		if !strings.HasPrefix(cleanPath, "/") {
+			cleanPath = "/" + cleanPath
+		}
+		if !strings.HasSuffix(cleanPath, "/") {
+			cleanPath = cleanPath + "/"
+		}
+	}
+
+	var confContent string
+	if enableStealth && cleanPath != "/" {
+		decoyDir := "/var/www/decoy"
+		_ = os.MkdirAll(decoyDir, 0755)
+		indexPath := filepath.Join(decoyDir, "index.html")
+		if !fileExists(indexPath) {
+			decoySvc := &DecoyService{}
+			_, _ = decoySvc.GenerateUniqueDecoy(decoyDir)
+		}
+
+		confContent = fmt.Sprintf(`server {
+    listen 80;
+    server_name %s;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name %s;
+
+    ssl_certificate %s;
+    ssl_certificate_key %s;
+    ssl_protocols TLSv1.2 TLSv1.3;
+
+    # Stealth Mode: Genuine business decoy landing page on root
+    location / {
+        root %s;
+        index index.html;
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Secret masked gateway for Samarka Panel
+    location %s {
+        proxy_pass %s://127.0.0.1:%d;
+%s        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+`, clean, clean, certFile, keyFile, decoyDir, cleanPath, targetScheme, panelPort, sslVerifyDirective)
+	} else {
+		confContent = fmt.Sprintf(`server {
     listen 80;
     server_name %s;
     return 301 https://$host$request_uri;
@@ -2427,6 +2485,7 @@ server {
     }
 }
 `, clean, clean, certFile, keyFile, targetScheme, panelPort, sslVerifyDirective)
+	}
 
 	_ = os.MkdirAll("/etc/nginx/sites-available", 0755)
 	_ = os.MkdirAll("/etc/nginx/sites-enabled", 0755)
@@ -2454,5 +2513,8 @@ server {
 		_ = restartCmd.Run()
 	}
 
+	if enableStealth && cleanPath != "/" {
+		return fmt.Sprintf("Маскировка активна! На корне https://%s/ открывается сайт-заглушка. Секретный вход в панель: https://%s%s", clean, clean, cleanPath), nil
+	}
 	return fmt.Sprintf("Nginx успешно настроен! Панель теперь доступна по адресу https://%s/ на стандартном порту 443", clean), nil
 }

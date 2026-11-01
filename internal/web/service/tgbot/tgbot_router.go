@@ -216,6 +216,53 @@ func (t *Tgbot) answerCommand(message *telego.Message, chatId int64, isAdmin boo
 		} else {
 			handleUnknownCommand()
 		}
+	case "link", "mask", "secret":
+		onlyMessage = true
+		if isAdmin {
+			basePath, _ := t.settingService.GetBasePath()
+			if basePath == "" {
+				basePath = "/"
+			}
+			webDomain, _ := t.settingService.GetWebDomain()
+			webPort, _ := t.settingService.GetPort()
+			certFile, _ := t.settingService.GetCertFile()
+			scheme := "http"
+			if certFile != "" {
+				scheme = "https"
+			}
+			
+			host := webDomain
+			if host == "" {
+				host = "YOUR_SERVER_IP"
+			}
+			
+			url := fmt.Sprintf("%s://%s:%d%s", scheme, host, webPort, basePath)
+			if (scheme == "https" && webPort == 443) || (scheme == "http" && webPort == 80) {
+				url = fmt.Sprintf("%s://%s%s", scheme, host, basePath)
+			}
+			// If stealth decoy with domain is used:
+			if webDomain != "" {
+				url = fmt.Sprintf("https://%s%s", webDomain, basePath)
+			}
+			
+			msg += "🦊 <b>Секретный шлюз Панели Самарка:</b>
+
+"
+			msg += fmt.Sprintf("🔗 <code>%s</code>
+
+", url)
+			if basePath != "/" {
+				msg += fmt.Sprintf("🛡️ <b>Секретный путь:</b> <code>%s</code>
+", basePath)
+				msg += "🎭 <b>Камуфляж:</b> Активен. На корне сайта открывается сайт-заглушка.
+"
+			} else {
+				msg += "ℹ️ <i>Секретный путь не настроен (панель открывается на корне /). Для включения маскировки задайте путь в настройках.</i>
+"
+			}
+		} else {
+			handleUnknownCommand()
+		}
 	case "restart":
 		onlyMessage = true
 		if isAdmin {
