@@ -909,8 +909,13 @@ update_x-ui() {
         local ch_choice=""
         read -rp "Выберите канал обновления [1-2, по умолчанию 1]: " ch_choice </dev/tty || true
         if [[ "${ch_choice}" == "2" ]]; then
-            XUI_UPDATE_TAG="stealth-beta"
+            XUI_UPDATE_TAG="v0.2.3"
         fi
+    fi
+
+    # Map aliases like stealth-beta to the stealth release v0.2.3
+    if [[ "${XUI_UPDATE_TAG}" == "stealth-beta" ]]; then
+        XUI_UPDATE_TAG="v0.2.3"
     fi
 
     # XUI_UPDATE_TAG lets the panel target a specific release tag (e.g. the

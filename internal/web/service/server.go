@@ -2398,8 +2398,7 @@ func (s *ServerService) SetupNginxProxy(domain string, panelPort int, useHttpsTa
 	sslVerifyDirective := ""
 	if useHttpsTarget {
 		targetScheme = "https"
-		sslVerifyDirective = "        proxy_ssl_verify off;
-"
+		sslVerifyDirective = "        proxy_ssl_verify off;\n"
 	}
 
 	cleanPath := strings.TrimSpace(secretBasePath)

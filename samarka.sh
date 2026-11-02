@@ -162,8 +162,8 @@ update() {
             update_tag=""
             ;;
         2)
-            echo -e "${yellow}Выбран канал: Бета с маскировкой (Beta Stealth)${plain}"
-            update_tag="stealth-beta"
+            echo -e "${yellow}Выбран канал: Бета с маскировкой (v0.2.3 Beta Stealth)${plain}"
+            update_tag="v0.2.3"
             ;;
         *)
             echo -e "${red}Неверный ввод, возврат в меню.${plain}"

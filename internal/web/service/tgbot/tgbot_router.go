@@ -245,20 +245,13 @@ func (t *Tgbot) answerCommand(message *telego.Message, chatId int64, isAdmin boo
 				url = fmt.Sprintf("https://%s%s", webDomain, basePath)
 			}
 			
-			msg += "🦊 <b>Секретный шлюз Панели Самарка:</b>
-
-"
-			msg += fmt.Sprintf("🔗 <code>%s</code>
-
-", url)
-			if basePath != "/" {
-				msg += fmt.Sprintf("🛡️ <b>Секретный путь:</b> <code>%s</code>
-", basePath)
-				msg += "🎭 <b>Камуфляж:</b> Активен. На корне сайта открывается сайт-заглушка.
-"
+			msg += "🦊 <b>Секретный шлюз Панели Самарка:</b>\n\n"
+			msg += fmt.Sprintf("🔗 <code>%s</code>\n\n", url)
+		if basePath != "/" {
+				msg += fmt.Sprintf("🛡️ <b>Секретный путь:</b> <code>%s</code>\n", basePath)
+				msg += "🎭 <b>Камуфляж:</b> Активен. На корне сайта открывается сайт-заглушка.\n"
 			} else {
-				msg += "ℹ️ <i>Секретный путь не настроен (панель открывается на корне /). Для включения маскировки задайте путь в настройках.</i>
-"
+				msg += "ℹ️ <i>Секретный путь не настроен (панель открывается на корне /). Для включения маскировки задайте путь в настройках.</i>\n"
 			}
 		} else {
 			handleUnknownCommand()
